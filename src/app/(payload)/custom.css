@@ -1,0 +1,252 @@
+/*
+ * Tema do admin (o mesmo do portfolio), inspirado no Sanity Studio: cinzas frios, tipografia Inter,
+ * azul como cor de acao e menos ruido visual. Fica fora das @layer do
+ * Payload, entao sobrepoe os estilos padrao sem precisar de !important.
+ */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  --style-radius-s: 4px;
+  --style-radius-m: 6px;
+  --style-radius-l: 10px;
+
+  /* Escala de cinzas levemente azulada (no dark mode o Payload inverte) */
+  --color-base-0: rgb(255, 255, 255);
+  --color-base-50: rgb(246, 246, 248);
+  --color-base-100: rgb(238, 238, 241);
+  --color-base-150: rgb(227, 228, 232);
+  --color-base-200: rgb(212, 214, 220);
+  --color-base-250: rgb(199, 201, 209);
+  --color-base-300: rgb(181, 184, 194);
+  --color-base-350: rgb(164, 168, 179);
+  --color-base-400: rgb(146, 151, 164);
+  --color-base-450: rgb(128, 134, 148);
+  --color-base-500: rgb(110, 118, 131);
+  --color-base-550: rgb(95, 102, 116);
+  --color-base-600: rgb(81, 88, 101);
+  --color-base-650: rgb(68, 74, 87);
+  --color-base-700: rgb(56, 61, 73);
+  --color-base-750: rgb(44, 48, 59);
+  --color-base-800: rgb(33, 36, 46);
+  --color-base-850: rgb(25, 27, 35);
+  --color-base-900: rgb(19, 21, 28);
+  --color-base-950: rgb(13, 14, 19);
+  --color-base-1000: rgb(8, 9, 12);
+
+  --admin-accent: rgb(34, 118, 252);
+  --admin-accent-hover: rgb(24, 99, 219);
+  --admin-accent-soft: rgba(34, 118, 252, 0.1);
+}
+
+html[data-theme='dark'] {
+  --admin-accent: rgb(85, 150, 255);
+  --admin-accent-hover: rgb(120, 172, 255);
+  --admin-accent-soft: rgba(85, 150, 255, 0.16);
+}
+
+body {
+  letter-spacing: -0.005em;
+}
+
+/* Botao principal (Salvar, Publicar, Criar) em azul */
+.btn--style-primary:not(.btn--disabled) {
+  --bg-color: var(--admin-accent);
+  --hover-bg: var(--admin-accent-hover);
+  --color: #fff;
+  --hover-color: #fff;
+}
+
+/* Menu lateral mais leve. O item ativo e o que tem o indicador do Payload */
+.nav {
+  background: var(--theme-elevation-50);
+  border-right: 1px solid var(--theme-elevation-100);
+}
+
+.nav-group__toggle {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--theme-elevation-500);
+}
+
+.nav__link {
+  border-radius: var(--style-radius-m);
+  padding-inline: 8px;
+  margin-inline: -8px;
+}
+
+.nav__link:hover {
+  background: var(--theme-elevation-100);
+}
+
+.nav__link:has(.nav__link-indicator) {
+  background: var(--admin-accent-soft);
+  color: var(--admin-accent);
+  font-weight: 500;
+}
+
+/* Campos: borda fina, foco em azul */
+.field-type input,
+.field-type textarea,
+.react-select .rs__control {
+  border-radius: var(--style-radius-m);
+}
+
+.field-type input:focus,
+.field-type textarea:focus,
+.react-select .rs__control--is-focused {
+  border-color: var(--admin-accent);
+  box-shadow: 0 0 0 3px var(--admin-accent-soft);
+}
+
+.field-label {
+  font-weight: 500;
+}
+
+.field-description {
+  color: var(--theme-elevation-500);
+}
+
+/* Abas do documento no estilo "segmented" */
+.tabs-field__tab-button {
+  border-radius: var(--style-radius-m);
+}
+
+.tabs-field__tab-button--active {
+  color: var(--admin-accent);
+}
+
+/* Grupos recolhiveis e blocos com cara de cartao */
+.collapsible {
+  border-radius: var(--style-radius-l);
+  border-color: var(--theme-elevation-150);
+}
+
+.collapsible__toggle-wrap {
+  border-radius: var(--style-radius-l) var(--style-radius-l) 0 0;
+}
+
+/* Cartoes do dashboard */
+.card {
+  border-radius: var(--style-radius-l);
+  border: 1px solid var(--theme-elevation-100);
+  box-shadow: none;
+}
+
+.card:hover {
+  border-color: var(--admin-accent);
+}
+
+/* Tabela de listagem mais respirada */
+.table td,
+.table th {
+  padding-block: 12px;
+}
+
+.table tbody tr:hover td {
+  background: var(--theme-elevation-50);
+}
+
+/* Miniaturas nas listagens (capa do projeto, logos): so a imagem, maior */
+.cell-coverImage .file__filename,
+.cell-afterImage .file__filename,
+.cell-photo .file__filename,
+.cell-logo .file__filename {
+  display: none;
+}
+
+.cell-coverImage .file__thumbnail,
+.cell-afterImage .file__thumbnail {
+  width: 96px;
+  max-width: none;
+  height: 64px;
+  border-radius: var(--style-radius-m);
+  overflow: hidden;
+}
+
+.cell-logo .file__thumbnail,
+.cell-photo .file__thumbnail {
+  width: 40px;
+  max-width: none;
+  height: 40px;
+  border-radius: var(--style-radius-m);
+  overflow: hidden;
+  background: var(--theme-elevation-50);
+}
+
+.cell-coverImage .file__thumbnail img,
+.cell-afterImage .file__thumbnail img,
+.cell-photo .file__thumbnail img,
+.cell-logo .file__thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cell-logo .file__thumbnail img {
+  object-fit: contain;
+  padding: 4px;
+}
+
+/*
+ * Icones do menu lateral (pixelarticons, os mesmos do site). Cada link do
+ * menu tem um id fixo do Payload (nav-<collection> / nav-global-<global>); o
+ * icone entra como mascara, entao herda a cor do texto (inclusive no ativo).
+ * Para trocar um icone, troque o SVG (node_modules/pixelarticons/svg).
+ */
+.nav__link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-block: 7px;
+}
+
+.nav__link::before {
+  content: "";
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  background-color: currentColor;
+  opacity: 0.75;
+  -webkit-mask: var(--nav-icon) center / contain no-repeat;
+  mask: var(--nav-icon) center / contain no-repeat;
+}
+
+.nav__link:has(.nav__link-indicator)::before {
+  opacity: 1;
+}
+
+/* Planos: coins */
+#nav-plans { --nav-icon: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20fill%3D%22currentColor%22%20viewBox%3D%220%200%2024%2024%22%3E%20%3Cpath%20d%3D%22M6%202h6v2H6zM4%204h2v2H4zm8%200h2v2h-2zm-8%208h2v2H4zm8%200h2v2h-2zm-6%202h6v2H6zM2%206h2v6H2zm12%200h2v6h-2z%22%2F%3E%20%3Cpath%20d%3D%22M14%208h4v2h-4zm-4%2010h2v2h-2zm8-8h2v2h-2zm-6%2010h2v2h-2zm6-2h2v2h-2z%22%2F%3E%20%3Cpath%20d%3D%22M12%2020h6v2h-6zm-4-6h2v4H8zm12-2h2v6h-2zM7%206h4v2H7z%22%2F%3E%20%3Cpath%20d%3D%22M9%206h2v6H9zm6%208h2v4h-2zm-1-2h3v2h-3z%22%2F%3E%20%3C%2Fsvg%3E"); }
+/* Serviços avulsos: briefcase */
+#nav-services { --nav-icon: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20fill%3D%22currentColor%22%20viewBox%3D%220%200%2024%2024%22%3E%20%3Cpath%20d%3D%22M2%208h2v12H2zm18%200h2v12h-2zM4%206h16v2H4zm0%2014h16v2H4zM8%204h2v2H8zm2-2h4v2h-4zm4%202h2v2h-2z%22%2F%3E%20%3C%2Fsvg%3E"); }
+/* Projetos: image */
+#nav-projects { --nav-icon: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20fill%3D%22currentColor%22%20viewBox%3D%220%200%2024%2024%22%3E%20%3Cpath%20d%3D%22M4%202h16v2H4zm0%2018h16v2H4zM2%204h2v16H2zm18%200h2v16h-2zm-4%208h2v2h-2zm-2%202h2v2h-2zm4%200h2v2h-2zm-8%200h2v2h-2zm2%202h2v2h-2zm2%202h2v2h-2z%22%2F%3E%20%3Cpath%20d%3D%22M20%2016h2v2h-2zM8%2016h2v2H8zm-2%202h2v2H6zM8%206h2v2H8zM6%208h2v2H6zm2%202h2v2H8zm2-2h2v2h-2z%22%2F%3E%20%3C%2Fsvg%3E"); }
+/* Antes e depois: chevrons-horizontal */
+#nav-cases { --nav-icon: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20fill%3D%22currentColor%22%20viewBox%3D%220%200%2024%2024%22%3E%20%3Cpath%20d%3D%22M10%2015v2H8v-2h2Zm6%202h-2v-2h2v2Zm-8-2H6v-2h2v2Zm10%200h-2v-2h2v2ZM6%2013H4v-2h2v2Zm14%200h-2v-2h2v2ZM8%2011H6V9h2v2Zm10%200h-2V9h2v2Zm-8-2H8V7h2v2Zm6%200h-2V7h2v2Z%22%2F%3E%20%3C%2Fsvg%3E"); }
+/* Clientes: building */
+#nav-clients { --nav-icon: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20fill%3D%22currentColor%22%20viewBox%3D%220%200%2024%2024%22%3E%20%3Cpath%20d%3D%22M5%202h14v2H5zm0%2018h14v2H5zM3%204h2v16H3zm16%200h2v16h-2zM7%206h2v2H7zm4%200h2v2h-2zm4%200h2v2h-2zm-8%204h2v2H7zm4%200h2v2h-2zm4%200h2v2h-2zm-8%204h2v2H7zm4%200h2v2h-2zm-1%204h4v2h-4zm5-4h2v2h-2z%22%2F%3E%20%3C%2Fsvg%3E"); }
+/* Depoimentos: message-text */
+#nav-testimonials { --nav-icon: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20fill%3D%22currentColor%22%20viewBox%3D%220%200%2024%2024%22%3E%20%3Cpath%20d%3D%22M20%202H4v2h16zm0%2014H6v2h14zm2-12h-2v12h2zM4%204H2v18h2zm2%2014H4v2h2zm0-6h4v2H6zm0-4h8v2H6z%22%2F%3E%20%3C%2Fsvg%3E"); }
+/* Perguntas frequentes: book-open */
+#nav-faqs { --nav-icon: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20fill%3D%22currentColor%22%20viewBox%3D%220%200%2024%2024%22%3E%20%3Cpath%20d%3D%22M2%203h9v2H2zM0%2019h11v2H0zM13%203h9v2h-9zm0%2016h11v2H13zM11%205h2v18h-2zM0%205h2v14H0zm22%200h2v14h-2zm-7%202h5v2h-5zm0%204h5v2h-5zm0%204h2v2h-2z%22%2F%3E%20%3C%2Fsvg%3E"); }
+/* Contatos: user-plus */
+#nav-leads { --nav-icon: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20fill%3D%22currentColor%22%20viewBox%3D%220%200%2024%2024%22%3E%20%3Cpath%20d%3D%22M9%202h6v2H9zm0%208h6v2H9zm6-6h2v6h-2zM7%204h2v6H7zM4%2018h2v4H4zm14%200h2v4h-2zM8%2014h8v2H8zm-2%202h2v2H6z%22%2F%3E%20%3Cpath%20d%3D%22M18%2016h2v6h-2z%22%2F%3E%20%3Cpath%20d%3D%22M16%2018h6v2h-6z%22%2F%3E%20%3C%2Fsvg%3E"); }
+/* Mídias: image-2-plus */
+#nav-media { --nav-icon: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20fill%3D%22currentColor%22%20viewBox%3D%220%200%2024%2024%22%3E%20%3Cpath%20d%3D%22M4%202h10v2H4zm0%2018h16v2H4zM2%204h2v16H2zm18%206h2v10h-2zm-6%200h2v2h-2zm-2%202h2v2h-2zm4%200h2v2h-2zm-6%202h2v2h-2zm8%200h2v2h-2zM8%2016h2v2H8zm-2%202h2v2H6zM8%206h2v2H8zM6%208h2v2H6zm2%202h2v2H8zm2-2h2v2h-2zm8-6h2v6h-2z%22%2F%3E%20%3Cpath%20d%3D%22M16%204h6v2h-6z%22%2F%3E%20%3C%2Fsvg%3E"); }
+/* Usuários: human */
+#nav-users { --nav-icon: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20fill%3D%22currentColor%22%20viewBox%3D%220%200%2024%2024%22%3E%20%3Cpath%20d%3D%22M10%202h4v4h-4zM3%207h18v2H3zm6%202h2v7H9zm4%200h2v7h-2zm-4%207h2v6H9zm4%200h2v6h-2zm-2-2h2v2h-2z%22%2F%3E%20%3C%2Fsvg%3E"); }
+/* Landing page: monitor */
+#nav-global-landing { --nav-icon: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20fill%3D%22currentColor%22%20viewBox%3D%220%200%2024%2024%22%3E%20%3Cpath%20d%3D%22M4%202h16v2H4zm0%2014h16v2H4zM2%204h2v12H2zm18%200h2v12h-2zm-9%2014h2v2h-2zm-3%202h8v2H8z%22%2F%3E%20%3C%2Fsvg%3E"); }
+/* Configurações: sliders */
+#nav-global-site-settings { --nav-icon: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22currentColor%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20d%3D%22M8%2014H7v6H5v-6H2v-2h6v2Zm5%206h-2V10h2v10Zm9-2h-3v2h-2v-2h-1v-2h6v2Zm-3-4h-2V4h2v10ZM7%2010H5V4h2v6Zm6-4h2v2H9V6h2V4h2v2Z%22%2F%3E%3C%2Fsvg%3E"); }
+/* Política de Privacidade: lock */
+#nav-global-privacy { --nav-icon: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20fill%3D%22currentColor%22%20viewBox%3D%220%200%2024%2024%22%3E%20%3Cpath%20d%3D%22M5%208h14v2H5zm0%2012h14v2H5zM3%2010h2v10H3zm16%200h2v10h-2zM7%204h2v4H7zm2-2h6v2H9zm6%202h2v4h-2z%22%2F%3E%20%3C%2Fsvg%3E"); }
+
+/* O indicador original (barra lateral) some: o fundo azul ja marca o ativo */
+.nav__link-indicator {
+  display: none;
+}
