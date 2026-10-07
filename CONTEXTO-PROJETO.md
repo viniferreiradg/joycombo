@@ -8,7 +8,10 @@ Landing page do **Joycombo** (joycombo.com.br), estúdio de design do Vini Ferre
 
 - **Next.js 16.2** (App Router, React 19.2, TypeScript, webpack). Essa versão tem mudanças grandes: consulte `node_modules/next/dist/docs/` antes de escrever código. O antigo `middleware.ts` agora é `src/proxy.ts`.
 - **Payload CMS v3** embutido no app. Painel em `/admin`, API em `/api`. Tema do painel copiado do portfólio (`src/app/(payload)/custom.css`), com a marca do Joycombo e ícones pixel no menu.
-- **Banco:** Postgres em produção (`DATABASE_URI=postgresql://...`). Sem `DATABASE_URI`, usa um arquivo SQLite local (`joycombo.db`), para rodar no computador sem instalar nada. O adaptador é escolhido em `payload.config.ts`.
+- **Banco:** Postgres na **Neon** (projeto `joycombo`, região São Paulo), em `DATABASE_URI`. Sem `DATABASE_URI`, usa um arquivo SQLite local (`joycombo.db`). O `.env.local` aponta para o banco de produção: o que for salvo no painel local aparece no site no ar.
+- **Hospedagem:** **Vercel** (projeto `joycombo`), deploy automático a cada push na branch `master`. `vercel.json` fixa o framework como Next.js.
+- **Mídias:** **Vercel Blob** (`joycombo-blob`, público, São Paulo), ligado quando existe `BLOB_READ_WRITE_TOKEN`. Arquivos em `media/` no Blob e servidos direto pela CDN. Upload direto do navegador (limite de 4,5 MB da Vercel). Sem o token, salva em `public/media` (ignorado no git). `npm run media:blob` copia para o Blob as mídias que estiverem em `public/media`.
+- **Mudanças de estrutura do banco:** na Vercel (produção) o Payload não altera tabelas. Rodar o projeto local (`npm run dev` ou o seed) contra a Neon aplica a mudança antes do deploy. Se aparecer pergunta de "data loss", NÃO aceitar sem entender.
 - **Tailwind CSS v4.** Cores, fontes e o "pixel" ficam como tokens em `src/app/globals.css` (`--color-accent`, `--font-title` etc.).
 - **pixelarticons** para os ícones (`import { Whatsapp } from 'pixelarticons/react'`).
 - `package.json` tem `"type": "module"`: o CLI do Payload (`payload run`, `generate:importmap`) precisa disso.

@@ -46,5 +46,5 @@ next-env.d.ts
 *.db
 *.db-*
 
-# uploads do banco local de teste (o seed gera de novo a partir de src/seed)
+# uploads locais (sem o token do Blob). Em producao as midias ficam no Vercel Blob
 /public/media

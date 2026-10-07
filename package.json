@@ -10,7 +10,8 @@
     "lint": "eslint",
     "seed": "payload run src/seed/index.ts",
     "generate:types": "payload generate:types",
-    "generate:importmap": "payload generate:importmap"
+    "generate:importmap": "payload generate:importmap",
+    "media:blob": "payload run src/seed/media-para-blob.ts"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "3.84.1",
@@ -18,6 +19,7 @@
     "@payloadcms/live-preview-react": "3.84.1",
     "@payloadcms/next": "3.84.1",
     "@payloadcms/richtext-lexical": "3.84.1",
+    "@payloadcms/storage-vercel-blob": "3.84.1",
     "@payloadcms/translations": "3.84.1",
     "@payloadcms/ui": "3.84.1",
     "graphql": "^16.14.0",

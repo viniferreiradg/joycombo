@@ -9,6 +9,8 @@ const nextConfig: NextConfig = {
   },
   images: {
     formats: ['image/avif', 'image/webp'],
+    // Imagens do painel servidas pelo Vercel Blob
+    remotePatterns: [{ protocol: 'https', hostname: '*.public.blob.vercel-storage.com' }],
   },
   webpack: (config) => {
     config.resolve.alias = {

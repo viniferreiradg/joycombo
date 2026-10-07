@@ -2,6 +2,7 @@ import { buildConfig } from 'payload'
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { sqliteAdapter } from '@payloadcms/db-sqlite'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
+import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob'
 import { pt } from '@payloadcms/translations/languages/pt'
 import sharp from 'sharp'
 import path from 'path'
@@ -72,4 +73,19 @@ export default buildConfig({
   },
   db,
   sharp,
+  plugins: [
+    // Na Vercel o disco e so leitura: imagens e videos do painel vao para o
+    // Vercel Blob. Sem o token (no computador), continua salvando em public/media.
+    vercelBlobStorage({
+      enabled: Boolean(process.env.BLOB_READ_WRITE_TOKEN),
+      token: process.env.BLOB_READ_WRITE_TOKEN,
+      // Arquivos servidos direto pela CDN do Blob (mais rapido para os videos)
+      collections: { media: { disablePayloadAccessControl: true, prefix: 'media' } },
+      // Envio direto do navegador para o Blob: a Vercel limita o corpo das
+      // requisicoes a 4,5 MB, pouco para os videos do topo
+      clientUploads: true,
+      // Mesma estrutura de banco com ou sem o Blob ligado
+      alwaysInsertFields: true,
+    }),
+  ],
 })
