@@ -18,7 +18,7 @@ export const landingDefaults = {
 
   // Pra quem e
   audienceKicker: 'Pra quem é',
-  audienceTitle: 'Dois começos, um destino',
+  audienceTitle: 'Vamos para a próxima fase',
   audienceIntro: 'Tirando o negócio do papel ou depois de tentar sozinho, o objetivo é o mesmo: um negócio que passa confiança e traz cliente.',
   audienceCards: [
     {
@@ -44,7 +44,7 @@ export const landingDefaults = {
 
   // Planos
   plansKicker: 'Planos',
-  plansTitle: 'Escolha teu combo',
+  plansTitle: 'Escolha seu combo',
   plansIntro: 'Preço aberto, prazo definido e tudo que está incluso, sem surpresa. Nos combos você paga menos do que contratando cada serviço separado.',
   tabPrefix: 'Preciso de',
   tabSiteLabel: 'Site',
@@ -64,7 +64,7 @@ export const landingDefaults = {
 
   // Depoimentos
   testimonialsKicker: 'Depoimentos',
-  testimonialsTitle: 'Quem já passou de fase com a gente',
+  testimonialsTitle: 'Quem já passou por aqui',
 
   // Quem faz
   aboutKicker: 'Quem faz',
@@ -102,7 +102,7 @@ export const landingDefaults = {
   gameCouponMessage: 'Oi! Ganhei o cupom {codigo} no jogo do site.',
 
   // Rodape
-  footerTagline: 'Marca, posts e site para pequenos negócios, com preço aberto.',
+  footerTagline: 'Vamos juntos para a sua fase profissional',
 }
 
 export type LandingContent = typeof landingDefaults

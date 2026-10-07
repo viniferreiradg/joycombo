@@ -1,11 +1,11 @@
-import { ArrowRight, Human, Reload } from 'pixelarticons/react'
+import { ArrowRight, Heart, Reload } from 'pixelarticons/react'
 import type { Landing } from '@/lib/data'
 import SectionHeading from '@/components/SectionHeading'
 
 // Os dois perfis lado a lado, com o mesmo peso. Cada card abre a aba de
 // planos mais adequada (o Pricing escuta o #planos-marca / #planos-site).
 export default function Audience({ landing }: { landing: Landing }) {
-  const icons = [Human, Reload]
+  const icons = [Heart, Reload]
 
   return (
     <section id="pra-quem-e" className="section on-light bg-white text-black">

@@ -17,8 +17,20 @@ const SCALE = 3
 const ACCENT = '#dcff01'
 const BG = '#111111'
 
-type Phase = 'idle' | 'playing' | 'won' | 'over'
-type Rock = { x: number; y: number; vx: number; vy: number; r: number; big: boolean; img: HTMLCanvasElement }
+// Sequencia da vitoria (segundos desde bater a meta)
+const WIN_BOOM_GAP = 0.09 // intervalo entre as explosoes dos asteroides
+const WIN_SPIN_TIME = 1.1 // duracao do giro de 360 da nave
+const WIN_DIALOG_PAUSE = 0.25 // respiro entre o giro e o cupom
+
+// Passa do ponto e volta (efeito de quique)
+const easeOutBack = (t: number) => {
+  const c = 1.9
+  return 1 + (c + 1) * Math.pow(t - 1, 3) + c * Math.pow(t - 1, 2)
+}
+
+// winning: a animacao entre bater a meta e abrir o cupom
+type Phase = 'idle' | 'playing' | 'winning' | 'won' | 'over'
+type Rock = { x: number; y: number; vx: number; vy: number; r: number; big: boolean; img: HTMLCanvasElement; boomAt?: number }
 type Bullet = { x: number; y: number; vx: number; vy: number; life: number }
 type Particle = { x: number; y: number; vx: number; vy: number; life: number }
 
@@ -83,6 +95,10 @@ export default function AsteroidsGame({ texts }: { texts: GameTexts }) {
     destroyed: 0,
     cooldown: 0,
     reduced: false,
+    winT: 0,
+    spinFrom: 0,
+    spinAt: 0,
+    pop: 1,
   })
 
   // Pontuacao: X pontos por asteroide; o cupom sai ao chegar na meta
@@ -101,6 +117,7 @@ export default function AsteroidsGame({ texts }: { texts: GameTexts }) {
     g.particles = []
     g.destroyed = 0
     g.spawnIn = 0.4
+    g.pop = 1
     setScore(0)
     setCanRedeem(false)
     setCopied(false)
@@ -200,9 +217,62 @@ export default function AsteroidsGame({ texts }: { texts: GameTexts }) {
       }
     }
 
+    const explode = (x: number, y: number, n: number) => {
+      if (g.reduced) return
+      for (let i = 0; i < n; i++) {
+        const a = Math.random() * Math.PI * 2
+        const s = 20 + Math.random() * 70
+        g.particles.push({ x, y, vx: Math.cos(a) * s, vy: Math.sin(a) * s, life: 0.5 + Math.random() * 0.6 })
+      }
+    }
+
+    // Vitoria: explode tudo, a nave gira 360 com quique e entao abre o cupom
+    const updateWin = (dt: number) => {
+      g.winT += dt
+      const t = g.winT
+
+      for (const r of g.rocks) {
+        r.x += r.vx * dt * 0.4
+        r.y += r.vy * dt * 0.4
+      }
+      g.rocks = g.rocks.filter((r) => {
+        if (t < (r.boomAt ?? 0)) return true
+        explode(r.x, r.y, r.big ? 28 : 18)
+        return false
+      })
+
+      const spin = g.reduced ? 1 : Math.min(1, Math.max(0, (t - g.spinAt) / WIN_SPIN_TIME))
+      if (spin > 0) {
+        g.angle = g.spinFrom + Math.PI * 2 * easeOutBack(spin)
+        // A nave cresce um pouco no meio do giro e volta
+        g.pop = 1 + Math.sin(Math.PI * Math.min(1, spin * 1.15)) * 0.35
+      }
+
+      if (t >= g.spinAt + (g.reduced ? 0 : WIN_SPIN_TIME) + WIN_DIALOG_PAUSE) {
+        g.pop = 1
+        setGamePhase('won')
+        // Pequena pausa antes do botao do WhatsApp aceitar clique: o
+        // visitante pode estar clicando rapido para atirar
+        window.setTimeout(() => setCanRedeem(true), 800)
+      }
+    }
+
     const update = (dt: number) => {
       const cx = g.W / 2
       const cy = g.H / 2
+
+      // Particulas animam em qualquer fase (explosoes do fim e do game over)
+      for (const p of g.particles) {
+        p.x += p.vx * dt
+        p.y += p.vy * dt
+        p.life -= dt
+      }
+      g.particles = g.particles.filter((p) => p.life > 0)
+
+      if (g.phase === 'winning') {
+        updateWin(dt)
+        return
+      }
 
       // Mira: segue o mouse/dedo; no teclado, gira com as setas
       if (g.pointer) {
@@ -262,24 +332,22 @@ export default function AsteroidsGame({ texts }: { texts: GameTexts }) {
       const m = Math.max(g.W, g.H) * 0.3
       g.rocks = g.rocks.filter((r) => r.x > -m && r.x < g.W + m && r.y > -m && r.y < g.H + m)
 
-      for (const p of g.particles) {
-        p.x += p.vx * dt
-        p.y += p.vy * dt
-        p.life -= dt
-      }
-      g.particles = g.particles.filter((p) => p.life > 0)
-
       const points = g.destroyed * perHit
       setScore((prev) => (prev === points ? prev : points))
 
       if (points >= goal) {
-        g.rocks = []
+        // Comeca a sequencia: os asteroides explodem um a um, do mais perto
+        // da nave para o mais longe, e nao nascem mais
         g.bullets = []
-        setGamePhase('won')
+        g.winT = 0
+        g.rocks
+          .sort((a, b) => Math.hypot(a.x - cx, a.y - cy) - Math.hypot(b.x - cx, b.y - cy))
+          .forEach((r, i) => (r.boomAt = 0.15 + i * WIN_BOOM_GAP))
+        const lastBoom = g.rocks.length ? 0.15 + (g.rocks.length - 1) * WIN_BOOM_GAP : 0
+        g.spinAt = lastBoom + 0.35
+        g.spinFrom = g.angle
+        setGamePhase('winning')
         trackEvent('jogo_cupom', { cupom: texts.couponCode })
-        // Pequena pausa antes do botao do WhatsApp aceitar clique: o
-        // visitante pode estar clicando rapido para atirar
-        window.setTimeout(() => setCanRedeem(true), 800)
         return
       }
 
@@ -312,7 +380,7 @@ export default function AsteroidsGame({ texts }: { texts: GameTexts }) {
         ctx.translate(g.W / 2, g.H / 2)
         // O bico da nave original aponta para a esquerda: gira meia volta
         ctx.rotate(g.angle + Math.PI)
-        ctx.scale(g.shipScale, g.shipScale)
+        ctx.scale(g.shipScale * g.pop, g.shipScale * g.pop)
         ctx.beginPath()
         SHIP_POINTS.forEach(([x, y], i) => (i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)))
         ctx.closePath()
@@ -383,7 +451,7 @@ export default function AsteroidsGame({ texts }: { texts: GameTexts }) {
       />
 
       {/* Placar */}
-      {phase === 'playing' && (
+      {(phase === 'playing' || phase === 'winning') && (
         <p className="pointer-events-none absolute left-4 top-4 font-title tabular-nums md:left-8 md:top-6 text-sm font-bold uppercase tracking-[0.14em] text-white md:text-base" aria-live="polite">
           Pontos <span className="text-accent">{score}</span>
         </p>
@@ -406,37 +474,39 @@ export default function AsteroidsGame({ texts }: { texts: GameTexts }) {
       )}
 
       {phase === 'won' && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black/85 p-4" aria-live="polite">
-          <div className="on-light pixel-box w-full max-w-md bg-white p-6 text-center text-black md:p-8" style={{ ['--p' as string]: '8px' }}>
-            <Trophy className="mx-auto mb-3 h-10 w-10" aria-hidden />
-            <p className="font-title text-2xl font-bold uppercase">Cupom desbloqueado</p>
-            <p className="mt-2 text-sm text-muted-light">{texts.couponText}</p>
-            <button
-              type="button"
-              onClick={copy}
-              className="pixel-box mx-auto mt-5 flex items-center gap-3 bg-accent px-5 py-3 font-title text-xl font-bold tracking-[0.12em]"
-              aria-label={`Copiar cupom ${texts.couponCode}`}
-            >
-              {texts.couponCode}
-              <Copy className="h-5 w-5" aria-hidden />
-            </button>
-            <p className="mt-2 h-4 text-xs text-muted-light">{copied ? 'Copiado!' : ''}</p>
-            <WhatsAppLink
-              message={fillTemplate(texts.couponMessage, { codigo: texts.couponCode })}
-              origin="jogo-cupom"
-              aria-disabled={!canRedeem}
-              onClick={(e) => {
-                if (!canRedeem) e.preventDefault()
-              }}
-              className={`btn btn-dark mt-4 w-full ${canRedeem ? '' : 'pointer-events-none opacity-60'}`}
-            >
-              <Whatsapp aria-hidden />
-              <span>{texts.couponCta}</span>
-            </WhatsAppLink>
-            <button type="button" onClick={start} className="mx-auto mt-4 flex items-center gap-2 text-sm font-semibold underline underline-offset-4">
-              <Reload className="h-4 w-4" aria-hidden />
-              Jogar de novo
-            </button>
+        <div className="absolute inset-0 flex animate-fade items-center justify-center bg-black/85 p-4" aria-live="polite">
+          <div className="on-light w-full max-w-md animate-pop motion-reduce:animate-none">
+            <div className="pixel-box bg-white p-6 text-center text-black md:p-8" style={{ ['--p' as string]: '8px' }}>
+              <Trophy className="mx-auto mb-3 h-10 w-10" aria-hidden />
+              <p className="font-title text-2xl font-bold uppercase">Cupom desbloqueado</p>
+              <p className="mt-2 text-sm text-muted-light">{texts.couponText}</p>
+              <button
+                type="button"
+                onClick={copy}
+                className="pixel-box mx-auto mt-5 flex items-center gap-3 bg-accent px-5 py-3 font-title text-xl font-bold tracking-[0.12em]"
+                aria-label={`Copiar cupom ${texts.couponCode}`}
+              >
+                {texts.couponCode}
+                <Copy className="h-5 w-5" aria-hidden />
+              </button>
+              <p className="mt-2 h-4 text-xs text-muted-light">{copied ? 'Copiado!' : ''}</p>
+              <WhatsAppLink
+                message={fillTemplate(texts.couponMessage, { codigo: texts.couponCode })}
+                origin="jogo-cupom"
+                aria-disabled={!canRedeem}
+                onClick={(e) => {
+                  if (!canRedeem) e.preventDefault()
+                }}
+                className={`btn btn-dark mt-4 w-full ${canRedeem ? '' : 'pointer-events-none opacity-60'}`}
+              >
+                <Whatsapp aria-hidden />
+                <span>{texts.couponCta}</span>
+              </WhatsAppLink>
+              <button type="button" onClick={start} className="mx-auto mt-4 flex items-center gap-2 text-sm font-semibold underline underline-offset-4">
+                <Reload className="h-4 w-4" aria-hidden />
+                Jogar de novo
+              </button>
+            </div>
           </div>
         </div>
       )}
