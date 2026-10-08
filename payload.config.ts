@@ -21,6 +21,7 @@ import { Leads } from './src/collections/Leads'
 import { Landing } from './src/globals/Landing'
 import { SiteSettings } from './src/globals/SiteSettings'
 import { Privacy } from './src/globals/Privacy'
+import { Seo } from './src/globals/Seo'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -65,7 +66,7 @@ export default buildConfig({
   },
   // A ordem aqui define a ordem dos grupos no menu do admin
   collections: [Plans, Services, Projects, Cases, Clients, Testimonials, Faqs, Leads, Media, Users],
-  globals: [Landing, SiteSettings, Privacy],
+  globals: [Landing, SiteSettings, Seo, Privacy],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || 'joycombo-secret-change-me',
   typescript: {

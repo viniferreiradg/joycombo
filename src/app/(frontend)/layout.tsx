@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { Sora } from 'next/font/google'
 import localFont from 'next/font/local'
-import { getLanding, getSettings } from '@/lib/data'
+import { getLanding, getSeo, getSettings } from '@/lib/data'
 import { SiteProvider } from '@/components/SiteContext'
 import TrackingScripts from '@/components/tracking/TrackingScripts'
 import CookieConsent from '@/components/tracking/CookieConsent'
@@ -32,17 +32,27 @@ export const viewport: Viewport = {
   themeColor: '#000000',
 }
 
+// Tudo vem do menu SEO do admin (com padroes no codigo)
 export async function generateMetadata(): Promise<Metadata> {
-  const settings = await getSettings()
-  const ogImage = settings.ogImage?.url
-    ? { url: settings.ogImage.url, width: settings.ogImage.width || 1200, height: settings.ogImage.height || 630 }
-    : { url: '/og-joycombo.png', width: 1200, height: 630 }
+  const seo = await getSeo()
+  // Imagem do menu SEO servida em JPG pela rota /og-image.jpg. O ?v= muda
+  // quando a imagem é trocada, para o WhatsApp não usar o preview antigo
+  const ogImage = seo.ogImage?.url
+    ? { url: `/og-image.jpg?v=${seo.ogImage.id}`, width: 1200, height: 630, type: 'image/jpeg' }
+    : { url: '/og-joycombo.png', width: 1200, height: 630, type: 'image/png' }
+
+  // Tags extras: mesmo name repetido vira varias meta tags
+  const other: Record<string, string[]> = {}
+  for (const t of seo.metaTags) (other[t.name] ||= []).push(t.content)
+  if (seo.bingVerification) (other['msvalidate.01'] ||= []).push(seo.bingVerification)
 
   return {
     metadataBase: new URL(serverUrl),
-    title: settings.siteTitle,
-    description: settings.siteDescription,
+    title: seo.title,
+    description: seo.description,
+    ...(seo.keywords.length && { keywords: seo.keywords }),
     alternates: { canonical: '/' },
+    robots: seo.indexable ? { index: true, follow: true } : { index: false, follow: false },
     icons: {
       icon: [
         { url: '/favicon/favicon-96x96.png', sizes: '96x96', type: 'image/png' },
@@ -52,22 +62,21 @@ export async function generateMetadata(): Promise<Metadata> {
       apple: '/favicon/apple-touch-icon.png',
     },
     manifest: '/favicon/site.webmanifest',
-    ...(settings.googleSiteVerification && {
-      verification: { google: settings.googleSiteVerification },
-    }),
+    ...(seo.googleVerification && { verification: { google: seo.googleVerification } }),
+    ...(Object.keys(other).length && { other }),
     openGraph: {
-      title: settings.siteTitle,
-      description: settings.siteDescription,
+      title: seo.title,
+      description: seo.description,
       url: serverUrl,
-      siteName: 'Joycombo',
+      siteName: seo.businessName,
       locale: 'pt_BR',
       type: 'website',
-      images: [{ ...ogImage, alt: 'Joycombo' }],
+      images: [{ ...ogImage, alt: seo.businessName }],
     },
     twitter: {
       card: 'summary_large_image',
-      title: settings.siteTitle,
-      description: settings.siteDescription,
+      title: seo.title,
+      description: seo.description,
       images: [ogImage.url],
     },
   }

@@ -15,6 +15,12 @@ export const SiteSettings: GlobalConfig = {
     read: () => true,
   },
   fields: [
+    // Busca e compartilhamento foram para o menu SEO. Os campos antigos ficam
+    // guardados (escondidos) e servem de reserva enquanto o SEO estiver vazio.
+    { name: 'siteTitle', type: 'text', defaultValue: d.siteTitle, admin: { hidden: true } },
+    { name: 'siteDescription', type: 'textarea', defaultValue: d.siteDescription, admin: { hidden: true } },
+    { name: 'ogImage', type: 'upload', relationTo: 'media', admin: { hidden: true } },
+    { name: 'googleSiteVerification', type: 'text', admin: { hidden: true } },
     {
       type: 'tabs',
       tabs: [
@@ -67,33 +73,6 @@ export const SiteSettings: GlobalConfig = {
           ],
         },
         {
-          label: 'Busca e compartilhamento',
-          description: 'Como o site aparece no Google e no preview do link (WhatsApp, Instagram).',
-          fields: [
-            {
-              name: 'siteTitle',
-              type: 'text',
-              label: 'Título',
-              defaultValue: d.siteTitle,
-              admin: { description: 'Até 60 caracteres. Foque em "criação de marca e site".' },
-            },
-            {
-              name: 'siteDescription',
-              type: 'textarea',
-              label: 'Descrição',
-              defaultValue: d.siteDescription,
-              admin: { description: 'Até 155 caracteres.' },
-            },
-            {
-              name: 'ogImage',
-              type: 'upload',
-              relationTo: 'media',
-              label: 'Imagem de compartilhamento',
-              admin: { description: '1200x630px. Se vazio, usa a imagem padrão com a marca.' },
-            },
-          ],
-        },
-        {
           label: 'Rastreamento',
           description: 'Pixels de anúncio. Só carregam depois que o visitante aceita os cookies. Vazio = não carrega.',
           fields: [
@@ -136,12 +115,6 @@ export const SiteSettings: GlobalConfig = {
                   admin: { width: '50%' },
                 },
               ],
-            },
-            {
-              name: 'googleSiteVerification',
-              type: 'text',
-              label: 'Verificação do Google Search Console',
-              admin: { description: 'Só o código do content da meta tag.' },
             },
           ],
         },

@@ -118,6 +118,16 @@ export const settingsDefaults = {
   region: 'SC',
 }
 
+// SEO (menu SEO do admin). Titulo e descricao da home caem nos antigos campos
+// de Configuracoes (siteTitle/siteDescription) quando o SEO esta vazio.
+export const seoDefaults = {
+  keywords: 'criação de marca, criação de site, identidade visual, logo, site para pequenos negócios, posts para Instagram',
+  privacyTitle: 'Política de Privacidade · Joycombo',
+  privacyDescription: 'Como o Joycombo coleta, usa e protege os seus dados.',
+  businessName: 'Joycombo',
+  founder: 'Vini Ferreira',
+}
+
 /** Usa o valor do CMS quando preenchido; senao, o padrao do codigo. */
 export function withDefaults<T extends Record<string, unknown>>(data: Partial<T> | null | undefined, defaults: T): T {
   const out = { ...defaults }

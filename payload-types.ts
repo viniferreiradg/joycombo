@@ -106,11 +106,13 @@ export interface Config {
   globals: {
     landing: Landing;
     'site-settings': SiteSetting;
+    seo: Seo;
     privacy: Privacy;
   };
   globalsSelect: {
     landing: LandingSelect<false> | LandingSelect<true>;
     'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
+    seo: SeoSelect<false> | SeoSelect<true>;
     privacy: PrivacySelect<false> | PrivacySelect<true>;
   };
   locale: null;
@@ -942,6 +944,10 @@ export interface Landing {
  */
 export interface SiteSetting {
   id: number;
+  siteTitle?: string | null;
+  siteDescription?: string | null;
+  ogImage?: (number | null) | Media;
+  googleSiteVerification?: string | null;
   /**
    * Ex: 5548999450235. Vale para todos os botões do site.
    */
@@ -954,18 +960,6 @@ export interface SiteSetting {
   cnpj?: string | null;
   city?: string | null;
   region?: string | null;
-  /**
-   * Até 60 caracteres. Foque em "criação de marca e site".
-   */
-  siteTitle?: string | null;
-  /**
-   * Até 155 caracteres.
-   */
-  siteDescription?: string | null;
-  /**
-   * 1200x630px. Se vazio, usa a imagem padrão com a marca.
-   */
-  ogImage?: (number | null) | Media;
   /**
    * Só números. Eventos: Contact (WhatsApp) e Lead (formulário).
    */
@@ -983,10 +977,68 @@ export interface SiteSetting {
    */
   adsLabelWhatsapp?: string | null;
   adsLabelForm?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * Como o site aparece no Google e no preview dos links (WhatsApp, Instagram). Campo vazio volta para o padrão.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "seo".
+ */
+export interface Seo {
+  id: number;
   /**
-   * Só o código do content da meta tag.
+   * Até 60 caracteres. É o texto azul no resultado do Google e o nome da aba do navegador.
    */
-  googleSiteVerification?: string | null;
+  title?: string | null;
+  /**
+   * Até 155 caracteres. Aparece embaixo do título no Google e no preview do link.
+   */
+  description?: string | null;
+  /**
+   * Separadas por vírgula. O Google quase não usa, mas outros buscadores sim.
+   */
+  keywords?: string | null;
+  /**
+   * 1200x630px. Aparece quando o link é enviado no WhatsApp, Instagram etc. Vazio = imagem padrão com a marca.
+   */
+  ogImage?: (number | null) | Media;
+  privacyTitle?: string | null;
+  privacyDescription?: string | null;
+  /**
+   * Desmarcado, o site pede para não aparecer em nenhum buscador (útil enquanto não está pronto).
+   */
+  indexable?: boolean | null;
+  /**
+   * Caminhos que o Google não deve visitar, além do painel. Ex: /politica-de-privacidade
+   */
+  blockedPaths?:
+    | {
+        path: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Só o código do content da meta tag google-site-verification.
+   */
+  googleVerification?: string | null;
+  /**
+   * Só o código do content da meta tag msvalidate.01.
+   */
+  bingVerification?: string | null;
+  businessName?: string | null;
+  founder?: string | null;
+  /**
+   * Viram <meta name="..." content="..."> no código da página.
+   */
+  metaTags?:
+    | {
+        name: string;
+        content: string;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1112,21 +1164,54 @@ export interface LandingSelect<T extends boolean = true> {
  * via the `definition` "site-settings_select".
  */
 export interface SiteSettingsSelect<T extends boolean = true> {
+  siteTitle?: T;
+  siteDescription?: T;
+  ogImage?: T;
+  googleSiteVerification?: T;
   whatsapp?: T;
   email?: T;
   instagram?: T;
   cnpj?: T;
   city?: T;
   region?: T;
-  siteTitle?: T;
-  siteDescription?: T;
-  ogImage?: T;
   metaPixelId?: T;
   ga4Id?: T;
   googleAdsId?: T;
   adsLabelWhatsapp?: T;
   adsLabelForm?: T;
-  googleSiteVerification?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "seo_select".
+ */
+export interface SeoSelect<T extends boolean = true> {
+  title?: T;
+  description?: T;
+  keywords?: T;
+  ogImage?: T;
+  privacyTitle?: T;
+  privacyDescription?: T;
+  indexable?: T;
+  blockedPaths?:
+    | T
+    | {
+        path?: T;
+        id?: T;
+      };
+  googleVerification?: T;
+  bingVerification?: T;
+  businessName?: T;
+  founder?: T;
+  metaTags?:
+    | T
+    | {
+        name?: T;
+        content?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

@@ -1,4 +1,4 @@
-import { getLanding, getPageData, getSettings } from '@/lib/data'
+import { getLanding, getPageData, getSeo, getSettings } from '@/lib/data'
 import Header from '@/components/sections/Header'
 import Hero from '@/components/sections/Hero'
 import BeforeAfter from '@/components/sections/BeforeAfter'
@@ -20,7 +20,7 @@ import { formatBRL } from '@/lib/format'
 export const revalidate = 60
 
 export default async function Home() {
-  const [landing, settings, data] = await Promise.all([getLanding(), getSettings(), getPageData()])
+  const [landing, settings, seo, data] = await Promise.all([getLanding(), getSettings(), getSeo(), getPageData()])
   const { plans, services, projects, cases, clients, testimonials, faqs } = data
   const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'https://joycombo.com.br'
   const prices = plans.map((p) => p.price).filter((p): p is number => p !== null)
@@ -31,16 +31,16 @@ export default async function Home() {
     {
       '@context': 'https://schema.org',
       '@type': 'ProfessionalService',
-      name: 'Joycombo',
+      name: seo.businessName,
       url: serverUrl,
-      description: settings.siteDescription,
-      image: `${serverUrl}/og-joycombo.png`,
+      description: seo.description,
+      image: seo.ogImage?.url || `${serverUrl}/og-joycombo.png`,
       logo: `${serverUrl}/favicon/web-app-manifest-512x512.png`,
       telephone: `+${settings.whatsapp}`,
       ...(settings.email && { email: settings.email }),
       address: { '@type': 'PostalAddress', addressLocality: settings.city, addressRegion: settings.region, addressCountry: 'BR' },
       areaServed: 'BR',
-      founder: { '@type': 'Person', name: 'Vini Ferreira' },
+      founder: { '@type': 'Person', name: seo.founder },
       sameAs: settings.instagram ? [`https://instagram.com/${settings.instagram}`] : [],
       priceRange: prices.length ? `${formatBRL(Math.min(...prices))} a ${formatBRL(Math.max(...prices))}` : undefined,
       makesOffer: plans.map((p) => ({

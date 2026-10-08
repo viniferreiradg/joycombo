@@ -1,7 +1,7 @@
 import { cache } from 'react'
 import { getPayload, type Where } from 'payload'
 import config from '@payload-config'
-import { landingDefaults, settingsDefaults, withDefaults } from '@/content/defaults'
+import { landingDefaults, seoDefaults, settingsDefaults, withDefaults } from '@/content/defaults'
 import { toPlanView, toServiceView, type PlanView, type ServiceDoc, type ServiceView } from '@/lib/plans'
 
 // Leitura do CMS para o site. `cache` evita buscar a mesma global duas vezes
@@ -50,6 +50,39 @@ export const getLanding = cache(async () => {
     aboutPhoto: (doc?.aboutPhoto as MediaDoc | null) || null,
     // Checkbox: false e um valor valido, entao nao passa pelo withDefaults
     gameEnabled: doc?.gameEnabled === undefined || doc?.gameEnabled === null ? landingDefaults.gameEnabled : Boolean(doc.gameEnabled),
+  }
+})
+
+// Menu SEO. Titulo, descricao, imagem e verificacao do Google caem nos
+// antigos campos de Configuracoes enquanto o SEO estiver vazio.
+export const getSeo = cache(async () => {
+  const payload = await getClient()
+  const [doc, settings] = await Promise.all([
+    payload.findGlobal({ slug: 'seo', depth: 1 }).catch(() => null) as Promise<Record<string, unknown> | null>,
+    getSettings(),
+  ])
+  const text = (v: unknown) => (typeof v === 'string' && v.trim() ? v.trim() : '')
+  const base = withDefaults(doc as Partial<typeof seoDefaults>, seoDefaults)
+  return {
+    ...base,
+    title: text(doc?.title) || settings.siteTitle,
+    description: text(doc?.description) || settings.siteDescription,
+    keywords: base.keywords
+      .split(',')
+      .map((k) => k.trim())
+      .filter(Boolean),
+    ogImage: (doc?.ogImage as MediaDoc | null) || settings.ogImage,
+    // Checkbox: false e um valor valido; so vazio (nunca salvo) conta como "sim"
+    indexable: doc?.indexable === undefined || doc?.indexable === null ? true : Boolean(doc.indexable),
+    blockedPaths: ((doc?.blockedPaths as { path?: string }[] | null) || [])
+      .map((b) => text(b.path))
+      .filter(Boolean)
+      .map((p) => (p.startsWith('/') ? p : `/${p}`)),
+    googleVerification: text(doc?.googleVerification) || settings.googleSiteVerification,
+    bingVerification: text(doc?.bingVerification),
+    metaTags: ((doc?.metaTags as { name?: string; content?: string }[] | null) || [])
+      .map((t) => ({ name: text(t.name), content: text(t.content) }))
+      .filter((t) => t.name && t.content),
   }
 })
 

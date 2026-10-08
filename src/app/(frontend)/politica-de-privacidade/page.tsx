@@ -4,14 +4,19 @@ import { RichText } from '@payloadcms/richtext-lexical/react'
 import type { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical'
 import { ArrowLeft } from 'pixelarticons/react'
 import { Logo } from '@/components/Brand'
-import { getClient, getSettings } from '@/lib/data'
+import { getClient, getSeo, getSettings } from '@/lib/data'
 
 export const revalidate = 60
 
-export const metadata: Metadata = {
-  title: 'Política de Privacidade · Joycombo',
-  description: 'Como o Joycombo coleta, usa e protege os seus dados.',
-  alternates: { canonical: '/politica-de-privacidade' },
+// Titulo e descricao vem do menu SEO (aba Outras paginas)
+export async function generateMetadata(): Promise<Metadata> {
+  const seo = await getSeo()
+  return {
+    title: seo.privacyTitle,
+    description: seo.privacyDescription,
+    alternates: { canonical: '/politica-de-privacidade' },
+    openGraph: { title: seo.privacyTitle, description: seo.privacyDescription },
+  }
 }
 
 export default async function PrivacyPage() {

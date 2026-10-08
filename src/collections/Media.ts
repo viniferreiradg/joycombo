@@ -22,10 +22,11 @@ export const Media: CollectionConfig = {
     ],
     adminThumbnail: 'thumbnail',
     mimeTypes: ['image/*', 'video/*', 'application/pdf'],
-    formatOptions: {
-      format: 'webp',
-      options: { quality: 90 },
-    },
+    // Sem conversão de formato: no admin o arquivo vai direto do navegador para
+    // o Vercel Blob (clientUploads), então o registro precisa ter o mesmo nome
+    // e extensão do arquivo enviado. Convertendo para WebP, o registro apontava
+    // para um .webp que nunca existiu (imagem quebrada). O site já otimiza as
+    // imagens na entrega (next/image).
   },
   fields: [
     {
