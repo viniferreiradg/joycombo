@@ -4,9 +4,27 @@
     {
       "name": "dev",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev"],
+      "runtimeArgs": [
+        "run",
+        "dev"
+      ],
       "port": 3000,
       "autoPort": true
+    },
+    {
+      "name": "video-studio",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "video/node_modules/@remotion/cli/remotion-cli.js",
+        "studio",
+        "video/src/index.ts",
+        "--public-dir",
+        "video/public",
+        "--port",
+        "3100",
+        "--no-open"
+      ],
+      "port": 3100
     }
   ]
 }

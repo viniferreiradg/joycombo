@@ -48,3 +48,6 @@ next-env.d.ts
 
 # uploads locais (sem o token do Blob). Em producao as midias ficam no Vercel Blob
 /public/media
+
+# materiais brutos dos clientes para o vídeo do hero (não versionar)
+/video dos clientes/
