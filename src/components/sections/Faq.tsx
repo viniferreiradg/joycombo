@@ -10,12 +10,12 @@ export default function Faq({ kicker, title, items }: { kicker: string; title: s
   return (
     <section id="faq" className="section on-light bg-paper text-black">
       <div className="container-site grid gap-10 md:grid-cols-[4fr_8fr] md:gap-16">
-        <div className="flex flex-col gap-4">
+        <div data-reveal-stagger className="flex flex-col gap-4">
           <span className="kicker self-start">{kicker}</span>
           <h2 className="title title-sm md:sticky md:top-24">{title}</h2>
         </div>
 
-        <div className="space-y-3">
+        <div data-reveal-stagger className="space-y-3">
           {items.map((f) => (
             <details key={f.id} className="faq group pixel-box bg-white" style={{ ['--p' as string]: '6px' }}>
               <summary className="flex cursor-pointer list-none items-center justify-between gap-4 p-5 text-lg font-bold md:p-6 [&::-webkit-details-marker]:hidden">

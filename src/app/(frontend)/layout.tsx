@@ -6,6 +6,7 @@ import { SiteProvider } from '@/components/SiteContext'
 import TrackingScripts from '@/components/tracking/TrackingScripts'
 import CookieConsent from '@/components/tracking/CookieConsent'
 import LivePreviewListener from '@/components/LivePreviewListener'
+import RevealObserver from '@/components/RevealObserver'
 import '../globals.css'
 
 const sora = Sora({
@@ -74,8 +75,9 @@ export async function generateMetadata(): Promise<Metadata> {
 
 // Escolhe a versao da tabela de precos antes da pagina aparecer (sem
 // "piscar"): "a" = preco aberto, "b" = "a partir de". No teste A/B, sorteia
-// uma vez e guarda, para o visitante ver sempre a mesma versao.
-const priceVariantScript = `(function(){var h=document.documentElement,m=h.getAttribute('data-preco-modo'),v;if(m==='teste-ab'){try{v=localStorage.getItem('jc-preco')}catch(e){}if(v!=='a'&&v!=='b'){v=Math.random()<.5?'a':'b';try{localStorage.setItem('jc-preco',v)}catch(e){}}}else{v=m==='a-partir'?'b':'a'}h.setAttribute('data-preco',v)})()`
+// uma vez e guarda, para o visitante ver sempre a mesma versao. Tambem liga o
+// efeito de "ir aparecendo" (data-reveal-on), menos com animacoes desligadas.
+const priceVariantScript = `(function(){var h=document.documentElement,m=h.getAttribute('data-preco-modo'),v;if(m==='teste-ab'){try{v=localStorage.getItem('jc-preco')}catch(e){}if(v!=='a'&&v!=='b'){v=Math.random()<.5?'a':'b';try{localStorage.setItem('jc-preco',v)}catch(e){}}}else{v=m==='a-partir'?'b':'a'}h.setAttribute('data-preco',v);if(!matchMedia('(prefers-reduced-motion: reduce)').matches)h.setAttribute('data-reveal-on','')})()`
 
 export default async function FrontendLayout({ children }: { children: React.ReactNode }) {
   const [settings, landing] = await Promise.all([getSettings(), getLanding()])
@@ -89,6 +91,7 @@ export default async function FrontendLayout({ children }: { children: React.Rea
       <body>
         <SiteProvider value={{ whatsapp: settings.whatsapp }}>{children}</SiteProvider>
         <LivePreviewListener />
+        <RevealObserver />
         {/* Guarda a origem (UTM) sempre; os pixels so carregam com ID no admin e cookies aceitos */}
         <TrackingScripts config={settings.tracking} />
         {hasTracking && <CookieConsent />}

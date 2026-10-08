@@ -17,7 +17,7 @@ export default function Portfolio({ kicker, title, intro, projects }: Props) {
       <div className="container-site">
         <SectionHeading kicker={kicker} title={title} intro={intro} tone="dark" />
 
-        <ul className="grid gap-x-6 gap-y-12 md:grid-cols-2">
+        <ul data-reveal-stagger className="grid gap-x-6 gap-y-12 md:grid-cols-2">
           {projects.map((p) => {
             const cover = p.coverImage
             const hover = p.hoverImage

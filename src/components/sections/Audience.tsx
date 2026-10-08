@@ -12,7 +12,7 @@ export default function Audience({ landing }: { landing: Landing }) {
       <div className="container-site">
         <SectionHeading kicker={landing.audienceKicker} title={landing.audienceTitle} intro={landing.audienceIntro} />
 
-        <div className="grid gap-4 md:grid-cols-2 md:gap-6">
+        <div data-reveal-stagger className="grid gap-4 md:grid-cols-2 md:gap-6">
           {landing.audienceCards.map((card, i) => {
             const Icon = icons[i % icons.length]
             return (

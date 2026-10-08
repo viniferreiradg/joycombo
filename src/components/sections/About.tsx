@@ -8,7 +8,7 @@ export default function About({ landing }: { landing: Landing }) {
 
   return (
     <section id="quem-faz" className="section on-light bg-white text-black">
-      <div className="container-site grid items-start gap-10 md:grid-cols-[5fr_7fr] md:gap-16">
+      <div data-reveal-stagger className="container-site grid items-start gap-10 md:grid-cols-[5fr_7fr] md:gap-16">
         <div className="pixel-box relative aspect-[4/5] overflow-hidden bg-black" style={{ ['--p' as string]: '8px' }}>
           {photo?.url ? (
             // Foto ou video .mp4 em loop (como a foto do portfolio do Vini)
@@ -36,7 +36,7 @@ export default function About({ landing }: { landing: Landing }) {
           </div>
 
           {!!landing.aboutStats.length && (
-            <dl className="mt-10 grid grid-cols-2 gap-3 md:gap-4">
+            <dl data-reveal-stagger className="mt-10 grid grid-cols-2 gap-3 md:gap-4">
               {landing.aboutStats.map((s) => (
                 <div key={s.value + s.label} className="pixel-box bg-paper p-5" style={{ ['--p' as string]: '6px' }}>
                   <dt className="sr-only">{s.label}</dt>

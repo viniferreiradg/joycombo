@@ -58,6 +58,11 @@
   from { opacity: 0; transform: translateY(-6px); }
 }
 
+/* Ir aparecendo ao rolar (RevealObserver) */
+@keyframes reveal {
+  from { opacity: 0; transform: translateY(40px); }
+}
+
 @keyframes drift {
   from { background-position: 0 0; }
   to { background-position: 480px -480px; }
@@ -257,6 +262,20 @@ body {
     .faq[open] .faq-answer {
       animation: none;
     }
+  }
+
+  /* Ir aparecendo ao rolar: o html ganha data-reveal-on no <head> (so com
+     JavaScript e animacoes ligadas). Antes de entrar na tela fica invisivel;
+     ao entrar, sobe e aparece (o atraso vem do RevealObserver). Usa
+     animation (e nao transition) para nao brigar com o hover dos botoes */
+  [data-reveal-on] [data-reveal]:not([data-in]),
+  [data-reveal-on] [data-reveal-stagger] > :not([data-in]) {
+    opacity: 0;
+  }
+  [data-reveal-on] [data-reveal][data-in],
+  [data-reveal-on] [data-reveal-stagger] > [data-in] {
+    animation: reveal 0.9s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+    animation-delay: var(--reveal-delay, 0ms);
   }
 
   /* Etiqueta acima dos titulos: verde com texto preto */

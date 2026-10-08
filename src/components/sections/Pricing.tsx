@@ -105,7 +105,7 @@ export default function Pricing({ plans, services, texts }: { plans: PlanView[];
         </div>
 
         <div id={`${tabsId}-panel`} role="tabpanel" aria-labelledby={`${tabsId}-${tab}`}>
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4 xl:gap-5">
+          <div data-reveal-stagger className="grid gap-4 md:grid-cols-2 xl:grid-cols-4 xl:gap-5">
             {visible.map((plan, i) => (
               <PlanCard key={`${tab}-${plan.id}`} plan={plan} previous={visible[i - 1]} rows={tabServices} texts={texts} tab={tab} />
             ))}
@@ -122,6 +122,7 @@ export default function Pricing({ plans, services, texts }: { plans: PlanView[];
 
         {/* Sob medida */}
         <div
+          data-reveal
           className="on-dark pixel-box mt-14 flex flex-col gap-6 bg-black p-6 text-white md:flex-row md:items-center md:justify-between md:p-10"
           style={{ ['--p' as string]: '8px' }}
         >

@@ -22,6 +22,17 @@ const WIN_BOOM_GAP = 0.09 // intervalo entre as explosoes dos asteroides
 const WIN_SPIN_TIME = 1.1 // duracao do giro de 360 da nave
 const WIN_DIALOG_PAUSE = 0.25 // respiro entre o giro e o cupom
 
+// Movimento: antes de comecar o cenario desliza devagar (a nave "navegando");
+// ao comecar ela freia. Cada tiro empurra a nave de leve para tras; passando
+// do limite, quem anda e o cenario
+const CRUISE_SPEED = 0.05 // velocidade do cenario parado, em fracao da tela por segundo
+const BRAKE_TIME = 1.4 // segundos para frear (e para voltar a navegar)
+const RECOIL = 0.06 // empurrao de cada tiro, em fracao da tela por segundo
+const RECOIL_FRICTION = 2.5 // quanto maior, mais rapido o empurrao acaba
+const SHIP_LIMIT_PX = 150 // distancia maxima da nave ao centro, em px da tela
+
+const easeInOutCubic = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2)
+
 // Passa do ponto e volta (efeito de quique)
 const easeOutBack = (t: number) => {
   const c = 1.9
@@ -90,7 +101,19 @@ export default function AsteroidsGame({ texts }: { texts: GameTexts }) {
     rocks: [] as Rock[],
     bullets: [] as Bullet[],
     particles: [] as Particle[],
-    stars: [] as { x: number; y: number; a: number }[],
+    stars: [] as { x: number; y: number; a: number; d: number }[],
+    // Deslocamento do cenario (estrelas) e da nave em relacao ao centro
+    camX: 0,
+    camY: 0,
+    sx: 0,
+    sy: 0,
+    svx: 0,
+    svy: 0,
+    // Velocidade de navegacao: 1 = navegando, 0 = parado; muda com easing
+    cruise: 1,
+    cruiseFrom: 1,
+    cruiseTo: 1,
+    cruiseT: 1,
     spawnIn: 0.6,
     destroyed: 0,
     cooldown: 0,
@@ -118,6 +141,10 @@ export default function AsteroidsGame({ texts }: { texts: GameTexts }) {
     g.destroyed = 0
     g.spawnIn = 0.4
     g.pop = 1
+    g.sx = g.sy = g.svx = g.svy = 0
+    g.cruiseFrom = g.cruise
+    g.cruiseTo = 0
+    g.cruiseT = 0
     setScore(0)
     setCanRedeem(false)
     setCopied(false)
@@ -132,13 +159,17 @@ export default function AsteroidsGame({ texts }: { texts: GameTexts }) {
     // O bico da nave fica a ~100 unidades do centro (contorno original)
     const nose = 100 * g.shipScale
     g.bullets.push({
-      x: g.W / 2 + Math.cos(g.angle) * nose,
-      y: g.H / 2 + Math.sin(g.angle) * nose,
+      x: g.W / 2 + g.sx + Math.cos(g.angle) * nose,
+      y: g.H / 2 + g.sy + Math.sin(g.angle) * nose,
       vx: Math.cos(g.angle) * speed,
       vy: Math.sin(g.angle) * speed,
       life: 1.4,
     })
     g.cooldown = 0.12
+    // Coice: a nave vai um pouco para o lado contrario do tiro
+    const kick = Math.min(g.W, g.H) * RECOIL
+    g.svx -= Math.cos(g.angle) * kick
+    g.svy -= Math.sin(g.angle) * kick
   }, [])
 
   // Clique / toque: comeca o jogo ou atira
@@ -189,6 +220,7 @@ export default function AsteroidsGame({ texts }: { texts: GameTexts }) {
         x: Math.floor(Math.random() * g.W),
         y: Math.floor(Math.random() * g.H),
         a: 0.15 + Math.random() * 0.35,
+        d: 0.4 + Math.random() * 0.6, // profundidade: as de perto andam mais
       }))
     }
     resize()
@@ -203,7 +235,7 @@ export default function AsteroidsGame({ texts }: { texts: GameTexts }) {
       const edge = Math.floor(Math.random() * 4)
       const x = edge === 0 ? -r : edge === 1 ? g.W + r : Math.random() * g.W
       const y = edge === 2 ? -r : edge === 3 ? g.H + r : Math.random() * g.H
-      const toShip = Math.atan2(g.H / 2 - y, g.W / 2 - x) + (Math.random() - 0.5) * 0.7
+      const toShip = Math.atan2(g.H / 2 + g.sy - y, g.W / 2 + g.sx - x) + (Math.random() - 0.5) * 0.7
       const speed = unit * (0.09 + g.destroyed * 0.006) * (g.reduced ? 0.6 : 1) * (big ? 1 : 1.3)
       g.rocks.push({ x, y, vx: Math.cos(toShip) * speed, vy: Math.sin(toShip) * speed, r, big, img: makeRockImage(r) })
     }
@@ -257,9 +289,56 @@ export default function AsteroidsGame({ texts }: { texts: GameTexts }) {
       }
     }
 
+    // Move o cenario inteiro (estrelas, asteroides, tiros, particulas)
+    const scrollWorld = (dx: number, dy: number) => {
+      g.camX += dx
+      g.camY += dy
+      for (const list of [g.rocks, g.bullets, g.particles]) {
+        for (const o of list) {
+          o.x += dx
+          o.y += dy
+        }
+      }
+    }
+
+    const updateMotion = (dt: number) => {
+      // Navegacao: o cenario corre no sentido contrario ao bico da nave
+      const goingIdle = g.phase === 'idle' || g.phase === 'over' || g.phase === 'won'
+      if (goingIdle && g.cruiseTo !== 1) {
+        g.cruiseFrom = g.cruise
+        g.cruiseTo = 1
+        g.cruiseT = 0
+      }
+      if (g.cruiseT < 1) {
+        g.cruiseT = Math.min(1, g.cruiseT + dt / BRAKE_TIME)
+        g.cruise = g.cruiseFrom + (g.cruiseTo - g.cruiseFrom) * easeInOutCubic(g.cruiseT)
+      }
+      if (!g.reduced && g.cruise > 0) {
+        const v = Math.min(g.W, g.H) * CRUISE_SPEED * g.cruise
+        scrollWorld(-Math.cos(g.angle) * v * dt, -Math.sin(g.angle) * v * dt)
+      }
+
+      // Coice dos tiros, com atrito
+      const f = Math.exp(-RECOIL_FRICTION * dt)
+      g.svx *= f
+      g.svy *= f
+      g.sx += g.svx * dt
+      g.sy += g.svy * dt
+      // Passou do limite: a nave fica e o cenario anda no lugar dela
+      const limit = Math.min(SHIP_LIMIT_PX / SCALE, Math.min(g.W, g.H) * 0.3)
+      const dist = Math.hypot(g.sx, g.sy)
+      if (dist > limit) {
+        const k = (dist - limit) / dist
+        scrollWorld(-g.sx * k, -g.sy * k)
+        g.sx -= g.sx * k
+        g.sy -= g.sy * k
+      }
+    }
+
     const update = (dt: number) => {
-      const cx = g.W / 2
-      const cy = g.H / 2
+      updateMotion(dt)
+      const cx = g.W / 2 + g.sx
+      const cy = g.H / 2 + g.sy
 
       // Particulas animam em qualquer fase (explosoes do fim e do game over)
       for (const p of g.particles) {
@@ -365,8 +444,10 @@ export default function AsteroidsGame({ texts }: { texts: GameTexts }) {
       ctx.fillRect(0, 0, g.W, g.H)
 
       for (const s of g.stars) {
+        const x = (((s.x + g.camX * s.d) % g.W) + g.W) % g.W
+        const y = (((s.y + g.camY * s.d) % g.H) + g.H) % g.H
         ctx.fillStyle = `rgba(255,255,255,${s.a})`
-        ctx.fillRect(s.x, s.y, 1, 1)
+        ctx.fillRect(Math.floor(x), Math.floor(y), 1, 1)
       }
 
       for (const r of g.rocks) ctx.drawImage(r.img, Math.round(r.x - r.img.width / 2), Math.round(r.y - r.img.height / 2))
@@ -377,7 +458,7 @@ export default function AsteroidsGame({ texts }: { texts: GameTexts }) {
 
       if (g.phase !== 'over') {
         ctx.save()
-        ctx.translate(g.W / 2, g.H / 2)
+        ctx.translate(g.W / 2 + g.sx, g.H / 2 + g.sy)
         // O bico da nave original aponta para a esquerda: gira meia volta
         ctx.rotate(g.angle + Math.PI)
         ctx.scale(g.shipScale * g.pop, g.shipScale * g.pop)
