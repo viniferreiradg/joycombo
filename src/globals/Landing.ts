@@ -40,10 +40,12 @@ export const Landing: GlobalConfig = {
       tabs: [
         {
           label: 'Topo',
-          description: 'Primeira tela: vídeo em tela cheia, uma linha de texto e o botão de WhatsApp.',
+          description: 'Primeira tela: só o vídeo dos trabalhos (feito no Remotion, pasta video/ do projeto).',
           fields: [
-            text('heroLine', 'Linha sobre o vídeo', 'Diz o que é e pra quem. Curta, sem parágrafo.'),
-            half(text('heroCtaLabel', 'Texto do botão'), text('heroWhatsMessage', 'Mensagem do WhatsApp', whatsHelp)),
+            text('heroLine', 'Título da página (invisível)', 'Não aparece na tela: é o título principal para o Google e leitores de tela. Diz o que é e pra quem.'),
+            // o topo não tem mais botão; o campo fica guardado, só escondido
+            { ...text('heroCtaLabel', 'Texto do botão'), admin: { hidden: true } } as Field,
+            text('heroWhatsMessage', 'Mensagem do WhatsApp', `${whatsHelp} Vale para o botão do menu e o flutuante.`),
             {
               type: 'collapsible',
               label: 'Vídeo',
@@ -54,14 +56,14 @@ export const Landing: GlobalConfig = {
                     type: 'upload',
                     relationTo: 'media',
                     label: 'Vídeo horizontal (desktop)',
-                    admin: { description: '.mp4 curto, em loop, sem áudio e comprimido (ideal até 4 MB).' },
+                    admin: { description: '.mp4 (H.264), em loop, sem áudio, 1920x840. O vídeo do Remotion sai em video/out/.' },
                   },
                   {
                     name: 'heroVideoMobile',
                     type: 'upload',
                     relationTo: 'media',
                     label: 'Vídeo vertical (celular)',
-                    admin: { description: 'Versão mais leve, 9:16 (ideal até 2 MB). Se vazio, usa o horizontal.' },
+                    admin: { description: '.mp4 1080x1350 (pasta video-mobile/ do projeto). Se vazio, usa o horizontal.' },
                   },
                 ),
                 half(

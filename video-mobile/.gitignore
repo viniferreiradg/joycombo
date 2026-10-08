@@ -1,0 +1,5 @@
+node_modules
+out
+recon
+# assets de clientes (mockups pagos, capturas, manuais): ficam só na máquina, o repo é público
+public

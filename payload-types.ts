@@ -802,20 +802,20 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
 export interface Landing {
   id: number;
   /**
-   * Diz o que é e pra quem. Curta, sem parágrafo.
+   * Não aparece na tela: é o título principal para o Google e leitores de tela. Diz o que é e pra quem.
    */
   heroLine?: string | null;
   heroCtaLabel?: string | null;
   /**
-   * Mensagem que já vem escrita quando a pessoa abre o WhatsApp.
+   * Mensagem que já vem escrita quando a pessoa abre o WhatsApp. Vale para o botão do menu e o flutuante.
    */
   heroWhatsMessage?: string | null;
   /**
-   * .mp4 curto, em loop, sem áudio e comprimido (ideal até 4 MB).
+   * .mp4 (H.264), em loop, sem áudio, 1920x840. O vídeo do Remotion sai em video/out/.
    */
   heroVideo?: (number | null) | Media;
   /**
-   * Versão mais leve, 9:16 (ideal até 2 MB). Se vazio, usa o horizontal.
+   * .mp4 1080x1350 (pasta video-mobile/ do projeto). Se vazio, usa o horizontal.
    */
   heroVideoMobile?: (number | null) | Media;
   /**

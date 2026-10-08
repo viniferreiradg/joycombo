@@ -11,7 +11,8 @@
     "seed": "payload run src/seed/index.ts",
     "generate:types": "payload generate:types",
     "generate:importmap": "payload generate:importmap",
-    "media:blob": "payload run src/seed/media-para-blob.ts"
+    "media:blob": "payload run src/seed/media-para-blob.ts",
+    "hero:video": "payload run src/seed/hero-video.ts"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "3.84.1",

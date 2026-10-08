@@ -25,6 +25,21 @@
         "--no-open"
       ],
       "port": 3100
+    },
+    {
+      "name": "video-mobile-studio",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "video-mobile/node_modules/@remotion/cli/remotion-cli.js",
+        "studio",
+        "video-mobile/src/index.ts",
+        "--public-dir",
+        "video-mobile/public",
+        "--port",
+        "3101",
+        "--no-open"
+      ],
+      "port": 3101
     }
   ]
 }

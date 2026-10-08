@@ -71,8 +71,6 @@ export default async function Home() {
       <main>
         <Hero
           line={landing.heroLine}
-          ctaLabel={landing.heroCtaLabel}
-          message={landing.heroWhatsMessage}
           video={landing.heroVideo}
           videoMobile={landing.heroVideoMobile}
           poster={landing.heroPoster}
