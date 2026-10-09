@@ -78,41 +78,52 @@ export default function Portfolio({ texts, projects }: Props) {
             <ul key={tab} className="grid gap-4 md:grid-cols-2 md:gap-5 lg:grid-cols-3">
               {visible.map((p, i) => {
                 const cover = p.coverImage
+                const chips = !!p.categories?.length && (
+                  <ul className="flex flex-wrap gap-1.5">
+                    {p.categories.map((c) => (
+                      <li
+                        key={c}
+                        className="pixel-box bg-accent px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-black"
+                        style={{ ['--p' as string]: '2px' }}
+                      >
+                        {CATEGORY_LABEL[c] || c}
+                      </li>
+                    ))}
+                  </ul>
+                )
+                const info = (
+                  <>
+                    <h3 className="font-title text-xl font-bold uppercase leading-tight md:text-2xl">{p.title}</h3>
+                    {p.summary && <p className="mt-1.5 text-sm leading-snug text-white/80">{p.summary}</p>}
+                    {p.partner && <p className="mt-2 text-xs text-muted-dark">Desenvolvido em parceria com {p.partner}</p>}
+                  </>
+                )
                 return (
-                  <li
-                    key={p.id}
-                    className="portfolio-card group relative aspect-square overflow-hidden bg-ink"
-                    style={{ ['--i' as string]: i }}
-                  >
-                    {cover?.url && (
-                      <MediaView
-                        src={cover.url}
-                        mimeType={cover.mimeType}
-                        alt={cover.alt || p.title}
-                        fill
-                        sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
-                      />
-                    )}
-
-                    <div className="on-dark absolute inset-0 flex flex-col justify-end bg-black/65 p-6 text-white transition-opacity duration-300 md:opacity-0 md:group-hover:opacity-100">
-                      {!!p.categories?.length && (
-                        <ul className="mb-3 flex flex-wrap gap-1.5">
-                          {p.categories.map((c) => (
-                            <li
-                              key={c}
-                              className="pixel-box bg-accent px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-black"
-                              style={{ ['--p' as string]: '2px' }}
-                            >
-                              {CATEGORY_LABEL[c] || c}
-                            </li>
-                          ))}
-                        </ul>
+                  <li key={p.id} className="portfolio-card group overflow-hidden bg-ink" style={{ ['--i' as string]: i }}>
+                    <div className="relative aspect-square overflow-hidden">
+                      {cover?.url && (
+                        <MediaView
+                          src={cover.url}
+                          mimeType={cover.mimeType}
+                          alt={cover.alt || p.title}
+                          fill
+                          sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+                          className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
                       )}
-                      <h3 className="font-title text-xl font-bold uppercase leading-tight md:text-2xl">{p.title}</h3>
-                      {p.summary && <p className="mt-1.5 text-sm leading-snug text-white/80">{p.summary}</p>}
-                      {p.partner && <p className="mt-2 text-xs text-muted-dark">Desenvolvido em parceria com {p.partner}</p>}
+
+                      {/* Celular: imagem limpa, só as categorias no topo */}
+                      {chips && <div className="absolute left-4 top-4 md:hidden">{chips}</div>}
+
+                      {/* Desktop: tudo aparece sobre a capa no hover */}
+                      <div className="on-dark absolute inset-0 hidden flex-col justify-end bg-black/65 p-6 text-white opacity-0 transition-opacity duration-300 group-hover:opacity-100 md:flex">
+                        {chips && <div className="mb-3">{chips}</div>}
+                        {info}
+                      </div>
                     </div>
+
+                    {/* Celular: nome e descrição embaixo da capa */}
+                    <div className="on-dark bg-black p-5 text-white md:hidden">{info}</div>
                   </li>
                 )
               })}

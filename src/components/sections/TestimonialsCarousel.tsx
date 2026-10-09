@@ -299,7 +299,7 @@ function TestimonialCard({ item }: { item: TestimonialDoc }) {
   return (
     <figure className="pixel-box flex h-full flex-col bg-ink p-7 md:p-9" style={{ ['--p' as string]: '8px' }}>
       <span aria-hidden className="mb-2 font-title text-5xl font-bold leading-none text-accent">“</span>
-      <blockquote className="mb-8 text-lg leading-snug md:text-xl">{item.text}</blockquote>
+      <blockquote className="mb-6 text-base leading-snug md:mb-8 md:text-xl">{item.text}</blockquote>
       <figcaption className="mt-auto flex items-center gap-4">
         {item.photo?.url ? (
           <Image
