@@ -15,9 +15,10 @@ import GameSection from '@/components/game/GameSection'
 import FloatingWhatsApp from '@/components/FloatingWhatsApp'
 import { formatBRL } from '@/lib/format'
 
-// Revalida a cada 60 s em background; cada "Salvar" no admin tambem
-// revalida na hora (rota /revalidate)
-export const revalidate = 60
+// Gerada a cada visita (sem pre-render no build): na Hostinger a versao
+// pre-renderada da home quebrava no navegador ("Connection closed"). Assim o
+// que for salvo no admin tambem aparece na hora.
+export const dynamic = 'force-dynamic'
 
 export default async function Home() {
   const [landing, settings, seo, data] = await Promise.all([getLanding(), getSettings(), getSeo(), getPageData()])
