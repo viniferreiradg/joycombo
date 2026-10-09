@@ -15,10 +15,19 @@ import GameSection from '@/components/game/GameSection'
 import FloatingWhatsApp from '@/components/FloatingWhatsApp'
 import { formatBRL } from '@/lib/format'
 
-// Gerada a cada visita (sem pre-render no build): na Hostinger a versao
-// pre-renderada da home quebrava no navegador ("Connection closed"). Assim o
-// que for salvo no admin tambem aparece na hora.
-export const dynamic = 'force-dynamic'
+// Revalida a cada 60 s em background; cada "Salvar" no admin tambem
+// revalida na hora (rota /revalidate)
+export const revalidate = 60
+
+// JSON-LD como texto, com os pontos dos dominios escritos como . (o
+// Google le igual). O endereco temporario da Hostinger troca
+// "joycombo.com.br" no corpo da resposta; isso muda o tamanho deste bloco
+// de dados do React e quebra a pagina no navegador ("Connection closed").
+function jsonLdHtml(data: unknown) {
+  return JSON.stringify(data)
+    .replace(/</g, '\\u003c')
+    .replace(/"[^"]*"/g, (str) => str.replace(/([a-z0-9-])\.([a-z]{2,})/gi, '$1\\u002e$2'))
+}
 
 export default async function Home() {
   const [landing, settings, seo, data] = await Promise.all([getLanding(), getSettings(), getSeo(), getPageData()])
@@ -67,7 +76,7 @@ export default async function Home() {
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdHtml(jsonLd) }} />
       <Header message={landing.heroWhatsMessage} />
       <main>
         <Hero
