@@ -79,8 +79,19 @@ export default async function Home() {
         {cases.length > 0 && <BeforeAfter kicker={landing.casesKicker} title={landing.casesTitle} intro={landing.casesIntro} cases={cases} />}
         <ClientsStrip clients={clients} />
         <Audience landing={landing} />
-        <Portfolio kicker={landing.portfolioKicker} title={landing.portfolioTitle} intro={landing.portfolioIntro} projects={projects} />
         <Pricing plans={plans} services={services} texts={landing} />
+        <Portfolio
+          texts={{
+            kicker: landing.portfolioKicker,
+            title: landing.portfolioTitle,
+            intro: landing.portfolioIntro,
+            tabAll: landing.portfolioTabAll,
+            tabSites: landing.portfolioTabSites,
+            tabBrands: landing.portfolioTabBrands,
+            empty: landing.portfolioEmpty,
+          }}
+          projects={projects}
+        />
         <Testimonials kicker={landing.testimonialsKicker} title={landing.testimonialsTitle} items={testimonials} />
         <About landing={landing} />
         <Faq kicker={landing.faqKicker} title={landing.faqTitle} items={faqs} />

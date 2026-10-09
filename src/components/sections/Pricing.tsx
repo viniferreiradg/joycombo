@@ -166,8 +166,9 @@ function PlanCard({ plan, previous, rows, texts, tab }: CardProps) {
   const priceClass = 'font-title text-[1.75rem] font-bold leading-none tracking-tight'
 
   return (
+    // Hover: o card sobe 12px (top, para não brigar com o transform da animação de entrada)
     <article
-      className={`pixel-box flex flex-col p-6 ${hl ? 'bg-accent text-black' : 'bg-white text-black'}`}
+      className={`pixel-box relative top-0 flex flex-col p-6 transition-[top] duration-200 ease-in-out hover:-top-3 ${hl ? 'bg-accent text-black' : 'bg-white text-black'}`}
       style={{ ['--p' as string]: '8px' }}
     >
       {/* Faixa do selo: reservada em todos os cards, para os titulos e
@@ -244,9 +245,9 @@ function PlanCard({ plan, previous, rows, texts, tab }: CardProps) {
         message={plan.whatsappMessage}
         origin={`plano-${tab}`}
         plan={plan.name}
-        className={`btn min-h-11 w-full py-2.5 text-sm ${hl ? 'btn-dark' : 'btn-accent'}`}
+        // No hover o botão inverte para contrastar com o card: verde vira preto, preto vira branco
+        className={`btn min-h-11 w-full py-2.5 text-sm ${hl ? 'btn-dark hover:bg-white hover:text-black' : 'btn-accent hover:bg-black hover:text-white'}`}
       >
-        <Whatsapp aria-hidden />
         <span>{texts.planCtaLabel}</span>
       </WhatsAppLink>
     </article>

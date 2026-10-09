@@ -10,7 +10,8 @@ export default function FinalCta({ landing }: { landing: Landing }) {
         <div>
           <h2 className="title mb-6">{landing.ctaTitle}</h2>
           <p className="mb-8 max-w-lg text-lg">{landing.ctaText}</p>
-          <WhatsAppLink message={landing.ctaWhatsMessage} origin="cta-final" className="btn btn-dark btn-lg">
+          {/* Hover: preto vira branco no fundo verde (o do formulário, no fundo branco, vira verde) */}
+          <WhatsAppLink message={landing.ctaWhatsMessage} origin="cta-final" className="btn btn-dark btn-lg hover:bg-white hover:text-black">
             <Whatsapp aria-hidden />
             <span>{landing.ctaButtonLabel}</span>
           </WhatsAppLink>

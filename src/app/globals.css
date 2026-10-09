@@ -58,6 +58,11 @@
   from { opacity: 0; transform: translateY(-6px); }
 }
 
+/* Cards do portfolio entrando ao trocar de aba */
+@keyframes portfolio-in {
+  from { opacity: 0; transform: scale(0.92); }
+}
+
 /* Ir aparecendo ao rolar (RevealObserver) */
 @keyframes reveal {
   from { opacity: 0; transform: translateY(40px); }
@@ -276,6 +281,17 @@ body {
   [data-reveal-on] [data-reveal-stagger] > [data-in] {
     animation: reveal 0.9s cubic-bezier(0.16, 1, 0.3, 1) backwards;
     animation-delay: var(--reveal-delay, 0ms);
+  }
+
+  /* Portfolio: cada card entra com um pequeno atraso em sequencia (--i) */
+  .portfolio-card {
+    animation: portfolio-in 0.35s ease-out backwards;
+    animation-delay: calc(var(--i, 0) * 50ms);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .portfolio-card {
+      animation: none;
+    }
   }
 
   /* Etiqueta acima dos titulos: verde com texto preto */

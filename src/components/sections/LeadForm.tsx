@@ -109,7 +109,7 @@ export default function LeadForm({ title, text, buttonLabel, messageTemplate }: 
           </label>
         </div>
 
-        <button type="submit" className="btn btn-dark w-full">
+        <button type="submit" className="btn btn-dark w-full hover:bg-accent hover:text-black">
           <Whatsapp aria-hidden />
           <span>{buttonLabel}</span>
         </button>

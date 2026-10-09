@@ -143,10 +143,19 @@ const MenuFixo: React.FC<{ id: string; topo?: MenuCaptura; rolado?: MenuCaptura;
 };
 
 // página já montada (todas as camadas no lugar), usada nos tiles do mural
-export const PaginaEstatica: React.FC<{ id: string; cap: Captura; menu?: MenuCaptura }> = ({ id, cap, menu }) => {
+// videoDe: frame do vídeo de fundo do site (ex.: Plathanus) para mostrar parado
+export const PaginaEstatica: React.FC<{ id: string; cap: Captura; menu?: MenuCaptura; videoDe?: number }> = ({ id, cap, menu, videoDe }) => {
   const dir = `clientes/${id}/captura/${cap.section}`;
   return (
     <div style={{ position: 'absolute', left: 0, top: 0, width: VIEWPORT.width, height: VIEWPORT.height, transform: `scale(${S})`, transformOrigin: '0 0' }}>
+      {cap.video && videoDe !== undefined && (
+        <OffthreadVideo
+          src={staticFile(`${dir}/${cap.video}`)}
+          muted
+          startFrom={videoDe}
+          style={{ position: 'absolute', inset: 0, width: VIEWPORT.width, height: VIEWPORT.height, objectFit: 'cover' }}
+        />
+      )}
       <Img src={staticFile(`${dir}/fundo.png`)} style={{ position: 'absolute', inset: 0, width: VIEWPORT.width, height: VIEWPORT.height }} />
       {cap.layers.map((c) => (
         <Img key={c.name} src={staticFile(`${dir}/${c.file}`)} style={{ position: 'absolute', left: c.x, top: c.y, width: c.width, height: c.height }} />

@@ -41,6 +41,10 @@ export const landingDefaults = {
   portfolioKicker: 'Portfólio',
   portfolioTitle: 'Trabalhos no ar',
   portfolioIntro: 'Marcas e sites feitos pelo Vini, sozinho ou em parceria com outros estúdios.',
+  portfolioTabAll: 'Todos',
+  portfolioTabSites: 'Sites',
+  portfolioTabBrands: 'Identidade visual',
+  portfolioEmpty: 'Nenhum projeto publicado nesta aba ainda.',
 
   // Planos
   plansKicker: 'Planos',

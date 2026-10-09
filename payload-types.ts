@@ -211,7 +211,7 @@ export interface Service {
   createdAt: string;
 }
 /**
- * Só publique projetos com autorização do cliente.
+ * Trabalhos da seção Portfólio. Arraste para mudar a ordem. Só publique com autorização do cliente.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "projects".
@@ -219,13 +219,16 @@ export interface Service {
 export interface Project {
   id: number;
   _order?: string | null;
+  /**
+   * Nome do cliente ou do projeto.
+   */
   title: string;
   /**
-   * Ex: Identidade visual e site institucional
+   * Uma linha. Ex: Identidade visual e site institucional.
    */
   summary?: string | null;
   /**
-   * Imagem ou vídeo .mp4. Proporção 4:3.
+   * Quadrada (1:1), de preferência 1200x1200px. Imagem ou vídeo .mp4.
    */
   coverImage: number | Media;
   hoverImage?: (number | null) | Media;
@@ -237,6 +240,9 @@ export interface Project {
    * Site no ar ou case no Behance.
    */
   url?: string | null;
+  /**
+   * Site e Marca viram as abas do portfólio. Um projeto pode estar nas duas.
+   */
   categories?: ('marca' | 'site' | 'insta')[] | null;
   /**
    * Marque só depois da autorização do cliente.
@@ -852,6 +858,13 @@ export interface Landing {
   portfolioKicker?: string | null;
   portfolioTitle?: string | null;
   portfolioIntro?: string | null;
+  portfolioTabAll?: string | null;
+  portfolioTabSites?: string | null;
+  portfolioTabBrands?: string | null;
+  /**
+   * Aparece quando a aba escolhida ainda não tem projeto publicado.
+   */
+  portfolioEmpty?: string | null;
   testimonialsKicker?: string | null;
   testimonialsTitle?: string | null;
   aboutKicker?: string | null;
@@ -1105,6 +1118,10 @@ export interface LandingSelect<T extends boolean = true> {
   portfolioKicker?: T;
   portfolioTitle?: T;
   portfolioIntro?: T;
+  portfolioTabAll?: T;
+  portfolioTabSites?: T;
+  portfolioTabBrands?: T;
+  portfolioEmpty?: T;
   testimonialsKicker?: T;
   testimonialsTitle?: T;
   aboutKicker?: T;

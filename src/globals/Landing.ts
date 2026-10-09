@@ -92,7 +92,8 @@ export const Landing: GlobalConfig = {
             {
               type: 'collapsible',
               label: 'Antes e depois',
-              admin: { initCollapsed: true, description: 'Os casos ficam em Conteúdo > Antes e depois.' },
+              // escondido junto com a collection Cases (ver src/collections/Cases.ts)
+              admin: { initCollapsed: true, hidden: true, description: 'Os casos ficam em Conteúdo > Antes e depois.' },
               fields: [half(text('casesKicker', 'Chamada'), text('casesTitle', 'Título')), area('casesIntro', 'Texto de apoio')],
             },
             {
@@ -145,7 +146,13 @@ export const Landing: GlobalConfig = {
               type: 'collapsible',
               label: 'Portfólio',
               admin: { initCollapsed: true, description: 'Os projetos ficam em Conteúdo > Projetos.' },
-              fields: [half(text('portfolioKicker', 'Chamada'), text('portfolioTitle', 'Título')), area('portfolioIntro', 'Texto de apoio')],
+              fields: [
+                half(text('portfolioKicker', 'Chamada'), text('portfolioTitle', 'Título')),
+                area('portfolioIntro', 'Texto de apoio'),
+                text('portfolioTabAll', 'Aba com todos os projetos'),
+                half(text('portfolioTabSites', 'Aba de sites'), text('portfolioTabBrands', 'Aba de identidade visual')),
+                text('portfolioEmpty', 'Aba sem projetos', 'Aparece quando a aba escolhida ainda não tem projeto publicado.'),
+              ],
             },
             {
               type: 'collapsible',

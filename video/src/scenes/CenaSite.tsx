@@ -124,10 +124,14 @@ export const CenaSite: React.FC<Props> = ({ id, fundo, intro, hero, secao2, ajus
 };
 
 // página já montada (todas as camadas no lugar), usada nos tiles do mural
-export const PaginaEstatica: React.FC<{ id: string; cap: Captura }> = ({ id, cap }) => {
+// videoDe: frame do vídeo de fundo do site (ex.: Plathanus) para mostrar parado
+export const PaginaEstatica: React.FC<{ id: string; cap: Captura; videoDe?: number }> = ({ id, cap, videoDe }) => {
   const dir = `clientes/${id}/captura/${cap.section}`;
   return (
     <div style={{ position: 'absolute', left: 0, top: 0, width: 1920, height: 1080, transform: `scale(${S})`, transformOrigin: '0 0' }}>
+      {cap.video && videoDe !== undefined && (
+        <OffthreadVideo src={staticFile(`${dir}/${cap.video}`)} muted startFrom={videoDe} style={{ position: 'absolute', inset: 0, width: 1920, height: 1080, objectFit: 'cover' }} />
+      )}
       <Img src={staticFile(`${dir}/fundo.png`)} style={{ position: 'absolute', inset: 0, width: 1920, height: 1080 }} />
       {cap.layers.map((c) => (
         <Img key={c.name} src={staticFile(`${dir}/${c.file}`)} style={{ position: 'absolute', left: c.x, top: c.y, width: c.width, height: c.height }} />

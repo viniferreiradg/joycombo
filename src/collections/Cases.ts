@@ -2,12 +2,14 @@ import type { CollectionConfig } from 'payload'
 import { revalidateHooks } from '@/lib/revalidate'
 
 // Antes e depois (slider logo depois do hero). Sem nenhum publicado, a
-// secao fica oculta.
+// secao fica oculta. Escondido do admin por enquanto (2026-10): para voltar,
+// e so tirar o `hidden` aqui e no bloco "Antes e depois" da Landing.
 export const Cases: CollectionConfig = {
   slug: 'cases',
   labels: { singular: 'Antes e depois', plural: 'Antes e depois' },
   orderable: true,
   admin: {
+    hidden: true,
     group: 'Conteúdo',
     useAsTitle: 'client',
     defaultColumns: ['afterImage', 'client', 'published'],

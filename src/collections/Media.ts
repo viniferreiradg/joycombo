@@ -20,7 +20,14 @@ export const Media: CollectionConfig = {
       { name: 'card', width: 800, height: 600, position: 'centre' },
       { name: 'hero', width: 1920, height: 1080, position: 'centre' },
     ],
-    adminThumbnail: 'thumbnail',
+    // Miniatura do painel direto do Blob: com disablePayloadAccessControl a
+    // rota /api/media/file/... não existe e o painel mostrava só o ícone.
+    // Vídeos não têm miniatura (fica o ícone).
+    adminThumbnail: ({ doc }) => {
+      if (!String(doc.mimeType || '').startsWith('image/')) return null
+      const sizes = doc.sizes as { thumbnail?: { url?: string | null } } | undefined
+      return sizes?.thumbnail?.url || (doc.url as string) || null
+    },
     mimeTypes: ['image/*', 'video/*', 'application/pdf'],
     // Sem conversão de formato: no admin o arquivo vai direto do navegador para
     // o Vercel Blob (clientUploads), então o registro precisa ter o mesmo nome
