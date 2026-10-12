@@ -1,16 +1,20 @@
 import type { Metadata, Viewport } from 'next'
-import { Sora } from 'next/font/google'
 import localFont from 'next/font/local'
 import '../globals.css'
 
 // Layout proprio dos orcamentos: mesmas fontes e cores do site, sem pixels de
 // anuncio, aviso de cookies ou preview do admin. Nunca indexado.
 
-const sora = Sora({
-  subsets: ['latin'],
+// Sora local (mesmos arquivos do PDF): o build nao depende de baixar do
+// Google Fonts, que falhou no build da Hostinger
+const sora = localFont({
+  src: [
+    { path: '../../fonts/pdf/Sora-Regular.ttf', weight: '400', style: 'normal' },
+    { path: '../../fonts/pdf/Sora-SemiBold.ttf', weight: '600', style: 'normal' },
+    { path: '../../fonts/pdf/Sora-Bold.ttf', weight: '700', style: 'normal' },
+  ],
   variable: '--font-sora',
   display: 'swap',
-  weight: ['400', '600', '700'],
 })
 
 const joycomboTitle = localFont({
