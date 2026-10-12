@@ -12,7 +12,8 @@
     "generate:types": "payload generate:types",
     "generate:importmap": "payload generate:importmap",
     "media:blob": "payload run src/seed/media-para-blob.ts",
-    "hero:video": "payload run src/seed/hero-video.ts"
+    "hero:video": "payload run src/seed/hero-video.ts",
+    "seed:orcamentos": "payload run src/seed/orcamentos.ts"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "3.84.1",
@@ -23,6 +24,7 @@
     "@payloadcms/storage-vercel-blob": "3.84.1",
     "@payloadcms/translations": "3.84.1",
     "@payloadcms/ui": "3.84.1",
+    "@react-pdf/renderer": "^4.9.0",
     "graphql": "^16.14.0",
     "next": "16.2.6",
     "payload": "3.84.1",

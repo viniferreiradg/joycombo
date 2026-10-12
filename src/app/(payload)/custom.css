@@ -245,6 +245,18 @@ body {
 #nav-global-site-settings { --nav-icon: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22currentColor%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20d%3D%22M8%2014H7v6H5v-6H2v-2h6v2Zm5%206h-2V10h2v10Zm9-2h-3v2h-2v-2h-1v-2h6v2Zm-3-4h-2V4h2v10ZM7%2010H5V4h2v6Zm6-4h2v2H9V6h2V4h2v2Z%22%2F%3E%3C%2Fsvg%3E"); }
 /* Política de Privacidade: lock */
 #nav-global-privacy { --nav-icon: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20fill%3D%22currentColor%22%20viewBox%3D%220%200%2024%2024%22%3E%20%3Cpath%20d%3D%22M5%208h14v2H5zm0%2012h14v2H5zM3%2010h2v10H3zm16%200h2v10h-2zM7%204h2v4H7zm2-2h6v2H9zm6%202h2v4h-2z%22%2F%3E%20%3C%2Fsvg%3E"); }
+/* Orçamentos: receipt */
+#nav-orcamentos { --nav-icon: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20fill%3D%22currentColor%22%20viewBox%3D%220%200%2024%2024%22%3E%20%3Cpath%20d%3D%22M3%202h2v18H3zm16%200h2v18h-2zM5%204h2v2H5zm4%200h2v2H9zM5%2020h14v2H5zm8-16h2v2h-2zM7%202h2v2H7zm4%200h2v2h-2zm4%200h2v2h-2zm2%202h2v2h-2zM7%208h10v2H7zm0%204h10v2H7zm0%204h4v2H7z%22%2F%3E%20%3C%2Fsvg%3E"); }
+/* Propostas: clipboard */
+#nav-propostas { --nav-icon: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20fill%3D%22currentColor%22%20viewBox%3D%220%200%2024%2024%22%3E%20%3Cpath%20d%3D%22M4%206h2v14H4zm2%2014h12v2H6zM18%206h2v14h-2zM6%204h2v2H6zm10%200h2v2h-2zm-6-2h4v2h-4zm0%204h4v2h-4zM8%202h2v6H8zm6%200h2v6h-2z%22%2F%3E%20%3C%2Fsvg%3E"); }
+/* Cases dos orçamentos: trophy */
+#nav-orcamento-cases { --nav-icon: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20fill%3D%22currentColor%22%20viewBox%3D%220%200%2024%2024%22%3E%20%3Cpath%20d%3D%22M16%2017H13V19H15V21H9V19H11V17H8V15H16V17ZM18%205H22V11H20V7H18V11H20V13H18V15H16V5H8V15H6V13H4V11H6V7H4V11H2V5H6V3H18V5Z%22%2F%3E%20%3C%2Fsvg%3E"); }
+/* Configurações de orçamento: settings-cog */
+#nav-global-orcamento-config { --nav-icon: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22currentColor%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20d%3D%22M4%2020h3v-2h4v4h2v-4h4v2h-2v4H9v-4H7v2H2v-5h2v3Zm18%202h-5v-2h3v-3h2v5ZM6%2011H2v2h4v4H4v-2H0V9h4V7h2v4Zm14-2h4v6h-4v2h-2v-4h4v-2h-4V7h2v2Zm-6%207h-4v-2h4v2Zm-4-2H8v-4h2v4Zm6%200h-2v-4h2v4Zm-2-4h-4V8h4v2ZM7%204H4v3H2V2h5v2Zm8%200h2V2h5v5h-2V4h-3v2h-4V2h-2v4H7V4h2V0h6v4Z%22%2F%3E%3C%2Fsvg%3E"); }
+/* SEO: search */
+#nav-global-seo { --nav-icon: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20fill%3D%22currentColor%22%20viewBox%3D%220%200%2024%2024%22%3E%20%3Cpath%20d%3D%22M22%2022h-2v-2h2v2Zm-2-2h-2v-2h2v2Zm-6-2H6v-2h8v2Zm4%200h-2v-2h2v2ZM6%2016H4v-2h2v2Zm10%200h-2v-2h2v2ZM4%2014H2V6h2v8Zm14%200h-2V6h2v8ZM6%206H4V4h2v2Zm10%200h-2V4h2v2Zm-2-2H6V2h8v2Z%22%2F%3E%20%3C%2Fsvg%3E"); }
+/* Imagens de orçamento: sobem pelos campos de imagem, fora do menu */
+#nav-orcamento-midias { display: none; }
 
 /* O indicador original (barra lateral) some: o fundo azul ja marca o ativo */
 .nav__link-indicator {

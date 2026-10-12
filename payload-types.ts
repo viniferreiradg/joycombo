@@ -75,6 +75,10 @@ export interface Config {
     testimonials: Testimonial;
     faqs: Faq;
     leads: Lead;
+    orcamentos: Orcamento;
+    propostas: Proposta;
+    'orcamento-cases': OrcamentoCase;
+    'orcamento-midias': OrcamentoMidia;
     media: Media;
     users: User;
     'payload-kv': PayloadKv;
@@ -92,6 +96,10 @@ export interface Config {
     testimonials: TestimonialsSelect<false> | TestimonialsSelect<true>;
     faqs: FaqsSelect<false> | FaqsSelect<true>;
     leads: LeadsSelect<false> | LeadsSelect<true>;
+    orcamentos: OrcamentosSelect<false> | OrcamentosSelect<true>;
+    propostas: PropostasSelect<false> | PropostasSelect<true>;
+    'orcamento-cases': OrcamentoCasesSelect<false> | OrcamentoCasesSelect<true>;
+    'orcamento-midias': OrcamentoMidiasSelect<false> | OrcamentoMidiasSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
@@ -108,12 +116,14 @@ export interface Config {
     'site-settings': SiteSetting;
     seo: Seo;
     privacy: Privacy;
+    'orcamento-config': OrcamentoConfig;
   };
   globalsSelect: {
     landing: LandingSelect<false> | LandingSelect<true>;
     'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
     seo: SeoSelect<false> | SeoSelect<true>;
     privacy: PrivacySelect<false> | PrivacySelect<true>;
+    'orcamento-config': OrcamentoConfigSelect<false> | OrcamentoConfigSelect<true>;
   };
   locale: null;
   widgets: {
@@ -423,6 +433,149 @@ export interface Lead {
   createdAt: string;
 }
 /**
+ * Cada orçamento gera um link para o cliente. Rascunho não abre para o cliente.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "orcamentos".
+ */
+export interface Orcamento {
+  id: number;
+  /**
+   * Rascunho não abre para o cliente (só para você, logado).
+   */
+  status: 'rascunho' | 'enviado';
+  token?: string | null;
+  dataExpiracao?: string | null;
+  expirado?: boolean | null;
+  cliente: string;
+  tituloCapa?: string | null;
+  data: string;
+  validadeDias: number;
+  mostrarCapa?: boolean | null;
+  mostrarSobre?: boolean | null;
+  sobreTitulo?: string | null;
+  sobreTextoOrigem?: ('site' | 'novo') | null;
+  /**
+   * Linha em branco separa parágrafos.
+   */
+  sobreTexto?: string | null;
+  sobreCards?: boolean | null;
+  /**
+   * A página usa a foto ou o vídeo do site; o PDF precisa de uma imagem fixa.
+   */
+  sobreFotoPdf?: (number | null) | OrcamentoMidia;
+  /**
+   * Arraste para ordenar. Vazio = a seção não aparece.
+   */
+  cases?: (number | OrcamentoCase)[] | null;
+  /**
+   * Arraste para ordenar (#1, #2...). Ao escolher uma proposta, o Valor vem do investimento dela; mudar aqui vale só para este orçamento. Vazio = a seção não aparece.
+   */
+  propostas?:
+    | {
+        proposta: number | Proposta;
+        valor?: number | null;
+        id?: string | null;
+      }[]
+    | null;
+  mostrarParcelamento?: boolean | null;
+  /**
+   * Vem preenchido com o texto de Landing page > Planos > Formas de pagamento. Cada linha vira uma opção (#1, #2...).
+   */
+  parcelamento?: string | null;
+  /**
+   * Os itens ficam em Orçamentos > Configurações de orçamento.
+   */
+  mostrarOutrasInfo?: boolean | null;
+  mostrarContraCapa?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "orcamento-midias".
+ */
+export interface OrcamentoMidia {
+  id: number;
+  alt?: string | null;
+  prefix?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+}
+/**
+ * Arraste para ordenar: é a ordem em que entram nos orçamentos novos.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "orcamento-cases".
+ */
+export interface OrcamentoCase {
+  id: number;
+  _order?: string | null;
+  nome: string;
+  subtitulo?: string | null;
+  /**
+   * Linha em branco separa parágrafos.
+   */
+  texto?: string | null;
+  link?: string | null;
+  /**
+   * Arraste para ordenar. Em "Escolher entre os existentes", as imagens que já estão aqui não aparecem na lista.
+   */
+  imagens?: (number | OrcamentoMidia)[] | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Arraste para ordenar: é a ordem (#1, #2...) em que entram nos orçamentos novos.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "propostas".
+ */
+export interface Proposta {
+  id: number;
+  _order?: string | null;
+  nome: string;
+  subtitulo?: string | null;
+  investimento?: number | null;
+  /**
+   * Soma dos dias de todos os itens.
+   */
+  prazoTotal?: number | null;
+  /**
+   * Numerados pela ordem (01, 02...). Arraste para reordenar.
+   */
+  sprints?:
+    | {
+        nome: string;
+        descricao?: string | null;
+        itens?:
+          | {
+              nome: string;
+              dias?: number | null;
+              id?: string | null;
+            }[]
+          | null;
+        entregaIcone?: ('documento' | 'fluxo' | 'monitor' | 'paleta' | 'pasta' | 'foguete' | 'check') | null;
+        entregaTexto?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  escopo1?: string | null;
+  escopo2?: string | null;
+  escopo3?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
@@ -503,6 +656,22 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'leads';
         value: number | Lead;
+      } | null)
+    | ({
+        relationTo: 'orcamentos';
+        value: number | Orcamento;
+      } | null)
+    | ({
+        relationTo: 'propostas';
+        value: number | Proposta;
+      } | null)
+    | ({
+        relationTo: 'orcamento-cases';
+        value: number | OrcamentoCase;
+      } | null)
+    | ({
+        relationTo: 'orcamento-midias';
+        value: number | OrcamentoMidia;
       } | null)
     | ({
         relationTo: 'media';
@@ -684,6 +853,106 @@ export interface LeadsSelect<T extends boolean = true> {
   notes?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "orcamentos_select".
+ */
+export interface OrcamentosSelect<T extends boolean = true> {
+  status?: T;
+  token?: T;
+  dataExpiracao?: T;
+  expirado?: T;
+  cliente?: T;
+  tituloCapa?: T;
+  data?: T;
+  validadeDias?: T;
+  mostrarCapa?: T;
+  mostrarSobre?: T;
+  sobreTitulo?: T;
+  sobreTextoOrigem?: T;
+  sobreTexto?: T;
+  sobreCards?: T;
+  sobreFotoPdf?: T;
+  cases?: T;
+  propostas?:
+    | T
+    | {
+        proposta?: T;
+        valor?: T;
+        id?: T;
+      };
+  mostrarParcelamento?: T;
+  parcelamento?: T;
+  mostrarOutrasInfo?: T;
+  mostrarContraCapa?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "propostas_select".
+ */
+export interface PropostasSelect<T extends boolean = true> {
+  _order?: T;
+  nome?: T;
+  subtitulo?: T;
+  investimento?: T;
+  prazoTotal?: T;
+  sprints?:
+    | T
+    | {
+        nome?: T;
+        descricao?: T;
+        itens?:
+          | T
+          | {
+              nome?: T;
+              dias?: T;
+              id?: T;
+            };
+        entregaIcone?: T;
+        entregaTexto?: T;
+        id?: T;
+      };
+  escopo1?: T;
+  escopo2?: T;
+  escopo3?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "orcamento-cases_select".
+ */
+export interface OrcamentoCasesSelect<T extends boolean = true> {
+  _order?: T;
+  nome?: T;
+  subtitulo?: T;
+  texto?: T;
+  link?: T;
+  imagens?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "orcamento-midias_select".
+ */
+export interface OrcamentoMidiasSelect<T extends boolean = true> {
+  alt?: T;
+  prefix?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -973,6 +1242,10 @@ export interface SiteSetting {
   cnpj?: string | null;
   city?: string | null;
   region?: string | null;
+  orcamentoWhatsapp?: boolean | null;
+  orcamentoEmail?: boolean | null;
+  orcamentoInstagram?: boolean | null;
+  orcamentoSite?: boolean | null;
   /**
    * Só números. Eventos: Contact (WhatsApp) e Lead (formulário).
    */
@@ -1079,6 +1352,28 @@ export interface Privacy {
     };
     [k: string]: unknown;
   } | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "orcamento-config".
+ */
+export interface OrcamentoConfig {
+  id: number;
+  /**
+   * Aparecem em todos os orçamentos com a seção ligada. Use {validade} para os dias de validade do orçamento. Linhas abaixo da primeira viram uma sublista.
+   */
+  outrasInformacoes?:
+    | {
+        texto: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * O Sobre da página usa a foto ou o vídeo do site; o PDF precisa de uma imagem fixa (JPG ou PNG). Cada orçamento novo já vem com esta.
+   */
+  fotoSobrePdf?: (number | null) | OrcamentoMidia;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1191,6 +1486,10 @@ export interface SiteSettingsSelect<T extends boolean = true> {
   cnpj?: T;
   city?: T;
   region?: T;
+  orcamentoWhatsapp?: T;
+  orcamentoEmail?: T;
+  orcamentoInstagram?: T;
+  orcamentoSite?: T;
   metaPixelId?: T;
   ga4Id?: T;
   googleAdsId?: T;
@@ -1240,6 +1539,22 @@ export interface SeoSelect<T extends boolean = true> {
 export interface PrivacySelect<T extends boolean = true> {
   updatedOn?: T;
   body?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "orcamento-config_select".
+ */
+export interface OrcamentoConfigSelect<T extends boolean = true> {
+  outrasInformacoes?:
+    | T
+    | {
+        texto?: T;
+        id?: T;
+      };
+  fotoSobrePdf?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

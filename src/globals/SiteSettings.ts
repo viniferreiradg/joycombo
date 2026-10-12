@@ -70,6 +70,24 @@ export const SiteSettings: GlobalConfig = {
                 { name: 'region', type: 'text', label: 'Estado (UF)', defaultValue: d.region, admin: { width: '50%' } },
               ],
             },
+            {
+              // Os contatos acima valem para o site e para os orçamentos. Aqui
+              // escolhe quais aparecem na contra capa dos orçamentos.
+              type: 'collapsible',
+              label: 'Contatos nos orçamentos',
+              admin: { description: 'Quais contatos aparecem na contra capa dos orçamentos. Contato vazio não aparece.' },
+              fields: [
+                {
+                  type: 'row',
+                  fields: [
+                    { name: 'orcamentoWhatsapp', type: 'checkbox', label: 'WhatsApp', defaultValue: true, admin: { width: '25%' } },
+                    { name: 'orcamentoEmail', type: 'checkbox', label: 'E-mail', defaultValue: true, admin: { width: '25%' } },
+                    { name: 'orcamentoInstagram', type: 'checkbox', label: 'Instagram', defaultValue: true, admin: { width: '25%' } },
+                    { name: 'orcamentoSite', type: 'checkbox', label: 'Site', defaultValue: true, admin: { width: '25%' } },
+                  ],
+                },
+              ],
+            },
           ],
         },
         {

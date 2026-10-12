@@ -22,6 +22,11 @@ import { Landing } from './src/globals/Landing'
 import { SiteSettings } from './src/globals/SiteSettings'
 import { Privacy } from './src/globals/Privacy'
 import { Seo } from './src/globals/Seo'
+import { OrcamentoConfig } from './src/globals/OrcamentoConfig'
+import { Orcamentos } from './src/collections/orcamentos/Orcamentos'
+import { Propostas } from './src/collections/orcamentos/Propostas'
+import { OrcamentoCases } from './src/collections/orcamentos/OrcamentoCases'
+import { OrcamentoMidias } from './src/collections/orcamentos/OrcamentoMidias'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -65,8 +70,13 @@ export default buildConfig({
     fallbackLanguage: 'pt',
   },
   // A ordem aqui define a ordem dos grupos no menu do admin
-  collections: [Plans, Services, Projects, Cases, Clients, Testimonials, Faqs, Leads, Media, Users],
-  globals: [Landing, SiteSettings, Seo, Privacy],
+  collections: [
+    Plans, Services, Projects, Cases, Clients, Testimonials, Faqs, Leads,
+    // Orcamentos (so para quem esta logado)
+    Orcamentos, Propostas, OrcamentoCases, OrcamentoMidias,
+    Media, Users,
+  ],
+  globals: [Landing, SiteSettings, Seo, Privacy, OrcamentoConfig],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || 'joycombo-secret-change-me',
   typescript: {
@@ -81,7 +91,10 @@ export default buildConfig({
       enabled: Boolean(process.env.BLOB_READ_WRITE_TOKEN),
       token: process.env.BLOB_READ_WRITE_TOKEN,
       // Arquivos servidos direto pela CDN do Blob (mais rapido para os videos)
-      collections: { media: { disablePayloadAccessControl: true, prefix: 'media' } },
+      collections: {
+        media: { disablePayloadAccessControl: true, prefix: 'media' },
+        'orcamento-midias': { disablePayloadAccessControl: true, prefix: 'orcamento-midias' },
+      },
       // Envio direto do navegador para o Blob: a Vercel limita o corpo das
       // requisicoes a 4,5 MB, pouco para os videos do topo
       clientUploads: true,
