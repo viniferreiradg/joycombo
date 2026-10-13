@@ -556,50 +556,22 @@ html {
   color: var(--mn-cinza);
 }
 
-.mn-escura .mn-versao-botao {
-  all: unset;
-  display: block;
-  width: 100%;
-  cursor: pointer;
-}
-
-.mn-versao-botao:focus-visible {
-  outline: 2px solid currentColor;
-  outline-offset: 6px;
-}
-
-/* menuzinho de download de uma versao (fora da pagina, tamanho fixo) */
-.mn-baixar {
-  position: fixed;
-  z-index: 50;
-  width: 220px;
-  box-sizing: border-box;
-  display: grid;
-  gap: 8px;
-  padding: 12px 14px;
-  background: #ffffff;
-  color: var(--mn-preto);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.18);
-  font-size: 13px;
-}
-
-.mn-baixar div {
+/* aviso de download na coluna de texto das versoes (some no PDF) */
+.mn-versoes .mn-texto {
   display: flex;
-  gap: 8px;
+  flex-direction: column;
 }
 
-.mn-baixar button {
-  flex: 1;
-  font: inherit;
-  font-weight: 600;
-  background: var(--mn-preto);
-  color: #ffffff;
-  border: 0;
-  padding: 8px 0;
-  cursor: pointer;
+.mn-dica-baixar {
+  margin-top: auto !important;
+  font-size: calc(var(--u) * 15);
 }
 
-.mn-versao figcaption {
+.mn-palco-pdf .mn-dica-baixar {
+  display: none;
+}
+
+.mn-escura .mn-versao figcaption {
   color: rgba(255, 255, 255, 0.65);
 }
 
@@ -1038,7 +1010,8 @@ html {
   .mn-aviso-rascunho,
   .mn-pdf,
   .mn-menu-pdf,
-  .mn-baixar {
+  .mn-baixar,
+  .mn-dica-baixar {
     display: none !important;
   }
 

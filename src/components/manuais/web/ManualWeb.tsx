@@ -279,6 +279,7 @@ function ConteudoDaPagina({ p, manual }: { p: Pagina; manual: Manual }) {
             <div className="mn-texto">
               <h2 className="mn-titulo">{dois(p.ordem)}. Versões da Marca</h2>
               <p>{p.subtitulo}</p>
+              <p className="mn-dica-baixar">Para baixar uma versão, é só clicar na marca escolhida.</p>
             </div>
             <div className="mn-versoes-grade" style={{ gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gridTemplateRows: 'repeat(3, minmax(0, 1fr))' }}>
               {p.itens.map((item, i) => (
