@@ -19,6 +19,8 @@ export const viewport: Viewport = {
 }
 
 export const metadata: Metadata = {
+  // links da imagem de compartilhamento (WhatsApp etc.) precisam ser absolutos
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'),
   title: 'Manual de Marca · Joycombo',
   robots: { index: false, follow: false, nocache: true, googleBot: { index: false, follow: false } },
   icons: {

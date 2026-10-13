@@ -336,7 +336,7 @@ export async function getManual(slug: string) {
 
   const fontes = blocos.flatMap((b) => (b.tipo === 'tipografia' ? b.fontes : []))
 
-  return { slug, cliente, rascunho: doc.status !== 'publicado', capa: img(doc.capa), paleta, paginas, sumario, fontes, zip }
+  return { slug, cliente, rascunho: doc.status !== 'publicado', capa: img(doc.capa), paleta, paginas, sumario, fontes, zip, atualizado: String(doc.updatedAt || '') }
 }
 
 export type Manual = NonNullable<Awaited<ReturnType<typeof getManual>>>
