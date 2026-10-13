@@ -10,6 +10,8 @@ import { fileURLToPath } from 'url'
 
 import { Users } from './src/collections/Users'
 import { Media } from './src/collections/Media'
+import { Manuais } from './src/collections/manuais/Manuais'
+import { ManualAssets } from './src/collections/manuais/ManualAssets'
 import { Services } from './src/collections/Services'
 import { Plans } from './src/collections/Plans'
 import { Projects } from './src/collections/Projects'
@@ -63,6 +65,13 @@ export default buildConfig({
         Logo: '@/components/admin/AdminLogo#AdminLogo',
         Icon: '@/components/admin/AdminLogo#AdminIcon',
       },
+      views: {
+        // Manual de marca, fase 1: laboratorio do motor de medicao (nao salva nada)
+        manualLab: {
+          Component: '@/components/manuais/lab/LabView#LabView',
+          path: '/manual-lab',
+        },
+      },
     },
   },
   i18n: {
@@ -74,6 +83,8 @@ export default buildConfig({
     Plans, Services, Projects, Cases, Clients, Testimonials, Faqs, Leads,
     // Orcamentos (so para quem esta logado)
     Orcamentos, Propostas, OrcamentoCases, OrcamentoMidias,
+    // Manuais de marca (so para quem esta logado)
+    Manuais, ManualAssets,
     Media, Users,
   ],
   globals: [Landing, SiteSettings, Seo, Privacy, OrcamentoConfig],
@@ -94,6 +105,7 @@ export default buildConfig({
       collections: {
         media: { disablePayloadAccessControl: true, prefix: 'media' },
         'orcamento-midias': { disablePayloadAccessControl: true, prefix: 'orcamento-midias' },
+        'manual-assets': { disablePayloadAccessControl: true, prefix: 'manual-assets' },
       },
       // Envio direto do navegador para o Blob: a Vercel limita o corpo das
       // requisicoes a 4,5 MB, pouco para os videos do topo

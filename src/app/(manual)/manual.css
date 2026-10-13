@@ -1,0 +1,1065 @@
+/*
+ * Manual de marca (versao web). Cada pagina e desenhada em 1920x1080 e escala
+ * com a largura: --u e "1px de desenho" (100cqw / 1920 dentro da pagina).
+ * Visual Joycombo discreto: Sora, branco, cinzas e preto; o verde so em
+ * detalhes minimos. No celular as paginas viram blocos em coluna.
+ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+:root {
+  --mn-preto: #111111;
+  --mn-cinza: #6b6b6b;
+  --mn-cinza-claro: #a3a3a3;
+  --mn-linha: #e4e4e0;
+  --mn-papel: #f3f3f0;
+  --mn-verde: #dcff01;
+  --mn-menu: 280px;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+.mn-body {
+  margin: 0;
+  background: #e8e8e4;
+  color: var(--mn-preto);
+  font-family: var(--font-sora), sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.mn-body a {
+  color: inherit;
+}
+
+/* ------------------------------------------------------------ estrutura */
+
+.mn-conteudo {
+  padding: 32px 32px 64px calc(var(--mn-menu) + 32px);
+  display: grid;
+  gap: 24px;
+}
+
+.mn-pagina {
+  container-type: inline-size;
+  width: 100%;
+  max-width: 1680px;
+  margin: 0 auto;
+  aspect-ratio: 16 / 9;
+  position: relative;
+  overflow: hidden;
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  scroll-margin-top: 24px;
+}
+
+.mn-in {
+  --u: calc(100cqw / 1920);
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  padding: calc(var(--u) * 72) calc(var(--u) * 96);
+  font-size: calc(var(--u) * 20);
+  line-height: 1.6;
+}
+
+.mn-escura {
+  background: var(--mn-preto);
+  color: #ffffff;
+}
+
+.mn-topo {
+  display: flex;
+  justify-content: space-between;
+  font-size: calc(var(--u) * 17);
+  color: var(--mn-cinza-claro);
+}
+
+.mn-topo span + span {
+  margin-left: calc(var(--u) * 56);
+}
+
+.mn-rodape {
+  display: flex;
+  justify-content: flex-end;
+  font-size: calc(var(--u) * 16);
+  color: var(--mn-cinza-claro);
+}
+
+.mn-rodape a {
+  text-decoration: none;
+}
+
+.mn-rodape a:hover {
+  color: var(--mn-preto);
+}
+
+.mn-escura .mn-rodape a:hover {
+  color: #ffffff;
+}
+
+.mn-meio {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  gap: calc(var(--u) * 96);
+  padding: calc(var(--u) * 72) 0 calc(var(--u) * 40);
+}
+
+.mn-texto {
+  width: calc(var(--u) * 560);
+  flex: none;
+}
+
+.mn-texto p {
+  margin: 0 0 calc(var(--u) * 18);
+  color: var(--mn-cinza);
+}
+
+.mn-titulo {
+  font-size: calc(var(--u) * 40);
+  line-height: 1.2;
+  font-weight: 600;
+  margin: 0 0 calc(var(--u) * 32);
+}
+
+.mn-visual {
+  flex: 1;
+  min-width: 0;
+  position: relative;
+}
+
+/* ------------------------------------------------------------ capa */
+
+.mn-capa {
+  display: flex;
+  height: 100%;
+}
+
+.mn-capa-lado {
+  width: 38%;
+  background: var(--mn-preto);
+  color: #ffffff;
+  padding: calc(var(--u) * 72) calc(var(--u) * 80);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.mn-capa-lado.mn-cheia {
+  width: 100%;
+}
+
+.mn-capa-imagem {
+  flex: 1;
+  position: relative;
+}
+
+.mn-capa h1 {
+  font-size: calc(var(--u) * 64);
+  line-height: 1.1;
+  font-weight: 600;
+  margin: 0;
+}
+
+.mn-capa .mn-cliente {
+  font-size: calc(var(--u) * 32);
+  color: var(--mn-cinza-claro);
+  margin-top: calc(var(--u) * 16);
+}
+
+/* ------------------------------------------------------------ apresentacao, divisorias, creditos */
+
+.mn-centro {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  max-width: calc(var(--u) * 820);
+}
+
+.mn-centro p {
+  margin: 0 0 calc(var(--u) * 22);
+  font-size: calc(var(--u) * 26);
+  line-height: 1.55;
+}
+
+.mn-divisoria {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  max-width: calc(var(--u) * 900);
+  padding-bottom: calc(var(--u) * 40);
+}
+
+.mn-divisoria h2 {
+  font-size: calc(var(--u) * 80);
+  line-height: 1.05;
+  font-weight: 600;
+  margin: 0 0 calc(var(--u) * 36);
+}
+
+.mn-divisoria p {
+  margin: 0 0 calc(var(--u) * 14);
+  color: var(--mn-cinza-claro);
+  font-size: calc(var(--u) * 22);
+}
+
+/* ------------------------------------------------------------ sumario */
+
+.mn-sumario {
+  flex: 1;
+  display: flex;
+  gap: calc(var(--u) * 120);
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: calc(var(--u) * 240);
+}
+
+.mn-sumario-col {
+  width: calc(var(--u) * 460);
+}
+
+.mn-sumario a {
+  text-decoration: none;
+  display: flex;
+  justify-content: space-between;
+  gap: calc(var(--u) * 24);
+}
+
+.mn-sumario a:hover {
+  text-decoration: underline;
+}
+
+.mn-sumario-secao {
+  font-size: calc(var(--u) * 26);
+  font-weight: 600;
+  margin-bottom: calc(var(--u) * 10);
+}
+
+.mn-sumario a.mn-sumario-item {
+  font-size: calc(var(--u) * 19);
+  color: var(--mn-cinza);
+  line-height: 1.8;
+}
+
+/* ------------------------------------------------------------ grades de imagem */
+
+.mn-grade {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  gap: calc(var(--u) * 16);
+}
+
+.mn-grade-1 {
+  grid-template: 1fr / 1fr;
+}
+
+.mn-grade-2 {
+  grid-template: 1fr / 1fr 1fr;
+}
+
+.mn-grade-3 {
+  grid-template: 1fr 1fr / 3fr 2fr;
+}
+
+.mn-grade-3 > :first-child {
+  grid-row: span 2;
+}
+
+.mn-grade-4 {
+  grid-template: 1fr 1fr / 1fr 1fr;
+}
+
+.mn-foto {
+  position: relative;
+  overflow: hidden;
+  background: var(--mn-papel);
+}
+
+.mn-foto img {
+  object-fit: cover;
+}
+
+/* universo visual: a imagem aparece inteira (marca, assets, icones nao podem ser cortados) */
+.mn-grade .mn-foto {
+  background: transparent;
+}
+
+.mn-grade .mn-foto img {
+  object-fit: contain;
+}
+
+.mn-par {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: calc(var(--u) * 16);
+}
+
+.mn-legenda {
+  position: absolute;
+  left: calc(var(--u) * 14);
+  bottom: calc(var(--u) * 12);
+  font-size: calc(var(--u) * 15);
+  color: #ffffff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+/* ------------------------------------------------------------ paleta */
+
+.mn-paleta {
+  display: grid;
+  gap: calc(var(--u) * 40);
+  align-content: center;
+  height: 100%;
+}
+
+.mn-paleta-grupo h3 {
+  font-size: calc(var(--u) * 16);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 0 0 calc(var(--u) * 16);
+}
+
+.mn-cores {
+  display: grid;
+  gap: calc(var(--u) * 20);
+}
+
+.mn-cor {
+  min-width: 0;
+  font-size: calc(var(--u) * 15);
+  line-height: 1.5;
+  color: var(--mn-cinza);
+  overflow-wrap: anywhere;
+}
+
+.mn-cor-amostra {
+  height: calc(var(--u) * 170);
+  margin-bottom: calc(var(--u) * 12);
+  border: 1px solid var(--mn-linha);
+}
+
+.mn-cor strong {
+  display: block;
+  color: var(--mn-preto);
+  font-weight: 600;
+  font-size: calc(var(--u) * 18);
+}
+
+/* principais: no maximo 250 por cor; secundarias: menores */
+.mn-paleta-principal .mn-cores {
+  max-width: calc(var(--u) * 1080);
+}
+
+.mn-paleta-principal .mn-cores .mn-cor {
+  max-width: calc(var(--u) * 250);
+}
+
+.mn-paleta-secundaria .mn-cor-amostra {
+  height: calc(var(--u) * 90);
+  margin-bottom: calc(var(--u) * 8);
+}
+
+.mn-paleta-secundaria .mn-cor {
+  font-size: calc(var(--u) * 12);
+}
+
+.mn-paleta-secundaria .mn-cor strong {
+  font-size: calc(var(--u) * 14);
+}
+
+.mn-paleta-secundaria .mn-cores {
+  gap: calc(var(--u) * 14);
+}
+
+/* ------------------------------------------------------------ tipografia */
+
+.mn-fontes {
+  display: grid;
+  gap: calc(var(--u) * 36);
+  align-content: center;
+  height: 100%;
+}
+
+.mn-fonte-exemplo {
+  font-size: calc(var(--u) * 64);
+  line-height: 1.15;
+  margin-bottom: calc(var(--u) * 10);
+  overflow-wrap: anywhere;
+}
+
+.mn-fontes-3 .mn-fonte-exemplo,
+.mn-fontes-4 .mn-fonte-exemplo {
+  font-size: calc(var(--u) * 44);
+}
+
+.mn-fonte-imagem {
+  display: flex;
+  align-items: flex-end;
+  max-height: calc(var(--u) * 150);
+  margin-bottom: calc(var(--u) * 12);
+}
+
+.mn-fonte-imagem img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  max-height: calc(var(--u) * 150);
+  object-fit: contain;
+  object-position: left bottom;
+}
+
+.mn-fontes-3 .mn-fonte-imagem,
+.mn-fontes-4 .mn-fonte-imagem,
+.mn-fontes-3 .mn-fonte-imagem img,
+.mn-fontes-4 .mn-fonte-imagem img {
+  max-height: calc(var(--u) * 100);
+}
+
+.mn-fonte-alfabeto {
+  font-size: calc(var(--u) * 22);
+  color: var(--mn-cinza);
+  margin-bottom: calc(var(--u) * 10);
+}
+
+.mn-fonte-legenda {
+  display: flex;
+  gap: calc(var(--u) * 24);
+  align-items: baseline;
+  padding-top: calc(var(--u) * 10);
+  border-top: 1px solid var(--mn-linha);
+  font-size: calc(var(--u) * 15);
+  color: var(--mn-cinza);
+}
+
+.mn-fonte-legenda strong {
+  color: var(--mn-preto);
+  font-weight: 600;
+}
+
+/* ------------------------------------------------------------ aplicacoes */
+
+.mn-sangria {
+  position: absolute;
+  inset: 0;
+  display: grid;
+}
+
+.mn-sangria-dupla {
+  grid-template-columns: 1fr 1fr;
+}
+
+.mn-voltar-flutuante {
+  position: absolute;
+  right: calc(var(--u) * 40);
+  bottom: calc(var(--u) * 32);
+  font-size: calc(var(--u) * 15);
+  background: rgba(255, 255, 255, 0.9);
+  padding: calc(var(--u) * 6) calc(var(--u) * 14);
+  text-decoration: none;
+}
+
+/* ------------------------------------------------------------ normas */
+
+.mn-escura .mn-texto p,
+.mn-escura .mn-topo,
+.mn-escura .mn-rodape {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.mn-versoes {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  gap: calc(var(--u) * 96);
+  padding: calc(var(--u) * 72) 0 calc(var(--u) * 40);
+}
+
+.mn-versoes-grade {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: calc(var(--u) * 40) calc(var(--u) * 48);
+  align-content: center;
+}
+
+.mn-versao {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(var(--u) * 16);
+  min-width: 0;
+}
+
+.mn-versao svg {
+  width: 100%;
+  max-width: 100%;
+  display: block;
+}
+
+.mn-versao-botao {
+  all: unset;
+  display: block;
+  width: 100%;
+  cursor: pointer;
+}
+
+.mn-versao-botao:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 6px;
+}
+
+/* menuzinho de download de uma versao (fora da pagina, tamanho fixo) */
+.mn-baixar {
+  position: fixed;
+  z-index: 50;
+  width: 220px;
+  box-sizing: border-box;
+  display: grid;
+  gap: 8px;
+  padding: 12px 14px;
+  background: #ffffff;
+  color: var(--mn-preto);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.18);
+  font-size: 13px;
+}
+
+.mn-baixar div {
+  display: flex;
+  gap: 8px;
+}
+
+.mn-baixar button {
+  flex: 1;
+  font: inherit;
+  font-weight: 600;
+  background: var(--mn-preto);
+  color: #ffffff;
+  border: 0;
+  padding: 8px 0;
+  cursor: pointer;
+}
+
+.mn-versao figcaption {
+  font-size: calc(var(--u) * 15);
+  color: var(--mn-cinza);
+}
+
+.mn-escura .mn-versao-botao {
+  all: unset;
+  display: block;
+  width: 100%;
+  cursor: pointer;
+}
+
+.mn-versao-botao:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 6px;
+}
+
+/* menuzinho de download de uma versao (fora da pagina, tamanho fixo) */
+.mn-baixar {
+  position: fixed;
+  z-index: 50;
+  width: 220px;
+  box-sizing: border-box;
+  display: grid;
+  gap: 8px;
+  padding: 12px 14px;
+  background: #ffffff;
+  color: var(--mn-preto);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.18);
+  font-size: 13px;
+}
+
+.mn-baixar div {
+  display: flex;
+  gap: 8px;
+}
+
+.mn-baixar button {
+  flex: 1;
+  font: inherit;
+  font-weight: 600;
+  background: var(--mn-preto);
+  color: #ffffff;
+  border: 0;
+  padding: 8px 0;
+  cursor: pointer;
+}
+
+.mn-versao figcaption {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.mn-texto-norma {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.mn-texto .mn-lockup {
+  color: var(--mn-preto);
+  font-weight: 600;
+  margin-top: calc(var(--u) * -16);
+}
+
+.mn-escura .mn-texto .mn-lockup {
+  color: #ffffff;
+}
+
+.mn-desenhos {
+  display: grid;
+  gap: calc(var(--u) * 40);
+  align-content: center;
+}
+
+.mn-desenho {
+  margin: 0;
+  min-width: 0;
+}
+
+.mn-desenho figcaption {
+  font-size: calc(var(--u) * 16);
+  font-weight: 600;
+  text-align: center;
+  margin-top: calc(var(--u) * 8);
+}
+
+.mn-obs {
+  font-size: calc(var(--u) * 15);
+}
+
+.mn-reducoes {
+  display: grid;
+  gap: calc(var(--u) * 48) calc(var(--u) * 40);
+  align-content: center;
+  align-items: end;
+}
+
+.mn-reducao {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(var(--u) * 10);
+  padding: calc(var(--u) * 20);
+  min-width: 0;
+}
+
+.mn-reducao figcaption {
+  display: grid;
+  justify-items: center;
+  gap: calc(var(--u) * 2);
+  font-size: calc(var(--u) * 14);
+  color: var(--mn-cinza);
+}
+
+.mn-reducao .mn-medida {
+  color: #00aeef;
+  font-size: calc(var(--u) * 16);
+}
+
+.mn-correto {
+  height: calc(var(--u) * 150);
+  max-width: calc(var(--u) * 420);
+  padding: calc(var(--u) * 12);
+}
+
+.mn-incorretos {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-auto-rows: 1fr;
+  align-content: center;
+}
+
+.mn-incorreto {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--u) * 12);
+  padding: calc(var(--u) * 24);
+  border-right: 1px solid var(--mn-linha);
+  border-bottom: 1px solid var(--mn-linha);
+  min-width: 0;
+}
+
+.mn-incorreto:nth-child(3n) {
+  border-right: 0;
+}
+
+.mn-incorreto:nth-last-child(-n + 3):nth-child(3n + 1),
+.mn-incorreto:nth-last-child(-n + 3):nth-child(3n + 1) ~ .mn-incorreto {
+  border-bottom: 0;
+}
+
+.mn-incorreto-desenho {
+  height: calc(var(--u) * 210);
+  padding: calc(var(--u) * 10);
+}
+
+.mn-incorreto figcaption {
+  font-size: calc(var(--u) * 15);
+  color: var(--mn-cinza);
+}
+
+.mn-incorreto figcaption span {
+  color: var(--mn-preto);
+  font-weight: 600;
+  margin-right: calc(var(--u) * 6);
+}
+
+/* ------------------------------------------------------------ creditos */
+
+.mn-creditos {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  max-width: calc(var(--u) * 900);
+}
+
+.mn-creditos h2 {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--u) * 14);
+  font-size: calc(var(--u) * 30);
+  font-weight: 600;
+  margin: 0 0 calc(var(--u) * 28);
+}
+
+.mn-creditos h2::before {
+  content: '';
+  width: calc(var(--u) * 12);
+  height: calc(var(--u) * 12);
+  background: var(--mn-verde);
+}
+
+.mn-creditos .mn-logo {
+  width: calc(var(--u) * 260);
+  display: block;
+  margin-bottom: calc(var(--u) * 12);
+}
+
+.mn-creditos p {
+  margin: 0 0 calc(var(--u) * 12);
+  font-size: calc(var(--u) * 16);
+  color: var(--mn-cinza-claro);
+}
+
+/* ------------------------------------------------------------ menu lateral */
+
+.mn-menu {
+  position: fixed;
+  inset: 0 auto 0 0;
+  width: var(--mn-menu);
+  background: #ffffff;
+  border-right: 1px solid var(--mn-linha);
+  overflow-y: auto;
+  padding: 28px 24px 40px;
+  font-size: 14px;
+  z-index: 20;
+}
+
+.mn-menu-cliente {
+  font-weight: 600;
+  font-size: 16px;
+  margin-bottom: 2px;
+}
+
+.mn-menu-sub {
+  color: var(--mn-cinza);
+  font-size: 13px;
+  margin-bottom: 28px;
+}
+
+.mn-menu ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.mn-menu li ul {
+  margin: 2px 0 10px 12px;
+}
+
+.mn-menu a {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 5px 0;
+  text-decoration: none;
+  color: var(--mn-cinza);
+}
+
+.mn-menu a:hover {
+  color: var(--mn-preto);
+}
+
+.mn-menu a.mn-secao {
+  color: var(--mn-preto);
+  font-weight: 600;
+  margin-top: 8px;
+}
+
+.mn-menu a .mn-num {
+  font-variant-numeric: tabular-nums;
+  padding: 0 6px;
+}
+
+.mn-menu a.mn-ativo {
+  color: var(--mn-preto);
+}
+
+.mn-menu a.mn-ativo .mn-num {
+  background: var(--mn-verde);
+}
+
+.mn-barra {
+  display: none;
+}
+
+/* botao de PDF (menu lateral e barra do celular) */
+.mn-pdf {
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  background: var(--mn-preto);
+  color: #ffffff;
+  border: 0;
+  padding: 8px 14px;
+  cursor: pointer;
+}
+
+.mn-pdf:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.mn-menu-pdf {
+  display: grid;
+  gap: 6px;
+  margin: -12px 0 28px;
+  font-size: 12px;
+  color: var(--mn-cinza);
+}
+
+.mn-menu-pdf .mn-pdf {
+  justify-self: start;
+}
+
+.mn-zip {
+  background: #ffffff;
+  color: var(--mn-preto);
+  box-shadow: inset 0 0 0 1px var(--mn-preto);
+}
+
+.mn-aviso-rascunho {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 30;
+  background: var(--mn-preto);
+  color: #ffffff;
+  font-size: 13px;
+  padding: 8px 12px;
+}
+
+/* ------------------------------------------------------------ celular: paginas em coluna */
+
+@media screen and (max-width: 900px) {
+  .mn-conteudo {
+    padding: 72px 12px 48px;
+    gap: 12px;
+  }
+
+  .mn-menu {
+    transform: translateX(-100%);
+    transition: transform 0.2s ease;
+    width: min(320px, 86vw);
+    padding-top: 80px;
+  }
+
+  .mn-menu.mn-aberto {
+    transform: none;
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.2);
+  }
+
+  .mn-barra {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: fixed;
+    inset: 0 0 auto 0;
+    height: 56px;
+    padding: 0 16px;
+    background: #ffffff;
+    border-bottom: 1px solid var(--mn-linha);
+    z-index: 30;
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  .mn-barra .mn-pdf {
+    margin-left: auto;
+    margin-right: 8px;
+    color: #ffffff;
+    border: 0;
+    font-weight: 600;
+  }
+
+  .mn-barra button {
+    font: inherit;
+    font-weight: 400;
+    background: none;
+    border: 1px solid var(--mn-linha);
+    padding: 6px 12px;
+    cursor: pointer;
+    color: inherit;
+  }
+
+  .mn-conteudo .mn-pagina {
+    aspect-ratio: auto;
+    scroll-margin-top: 68px;
+  }
+
+  .mn-conteudo .mn-in {
+    --u: calc(100cqw / 760);
+    position: relative;
+    min-height: 60vw;
+    padding: calc(var(--u) * 48) calc(var(--u) * 40);
+  }
+
+  .mn-conteudo .mn-meio {
+    flex-direction: column;
+    gap: calc(var(--u) * 32);
+    padding: calc(var(--u) * 40) 0 calc(var(--u) * 24);
+  }
+
+  .mn-conteudo .mn-texto {
+    width: auto;
+  }
+
+  .mn-conteudo .mn-versoes {
+    flex-direction: column;
+    gap: calc(var(--u) * 32);
+  }
+
+  .mn-conteudo .mn-incorretos {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .mn-conteudo .mn-visual {
+    min-height: calc(var(--u) * 520);
+  }
+
+  .mn-conteudo .mn-capa {
+    flex-direction: column-reverse;
+    height: auto;
+  }
+
+  .mn-conteudo .mn-capa-lado {
+    width: auto;
+    min-height: calc(var(--u) * 420);
+  }
+
+  .mn-conteudo .mn-capa-imagem {
+    aspect-ratio: 4 / 3;
+  }
+
+  .mn-conteudo .mn-sumario {
+    flex-direction: column;
+    align-items: stretch;
+    gap: calc(var(--u) * 40);
+    padding: calc(var(--u) * 40) 0;
+  }
+
+  .mn-conteudo .mn-sumario-col {
+    width: auto;
+  }
+
+  .mn-conteudo .mn-paleta,
+  .mn-conteudo .mn-fontes {
+    height: auto;
+  }
+
+  .mn-conteudo .mn-sangria {
+    position: relative;
+    aspect-ratio: 16 / 9;
+  }
+
+  .mn-conteudo .mn-sangria-dupla {
+    grid-template-columns: 1fr;
+    aspect-ratio: auto;
+  }
+
+  .mn-conteudo .mn-sangria-dupla > * {
+    aspect-ratio: 4 / 3;
+  }
+
+  .mn-conteudo .mn-in-sangria {
+    padding: 0;
+    min-height: 0;
+  }
+}
+
+/* ------------------------------------------------------------ impressao (PDF) */
+/* uma pagina 1920x1080 por pagina do manual, sem menu, cores exatas */
+
+@page {
+  size: 1920px 1080px;
+  margin: 0;
+}
+
+@media print {
+  html,
+  body {
+    background: #ffffff !important;
+  }
+
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .mn-menu,
+  .mn-barra,
+  .mn-aviso-rascunho,
+  .mn-pdf,
+  .mn-menu-pdf,
+  .mn-baixar {
+    display: none !important;
+  }
+
+  .mn-conteudo {
+    padding: 0 !important;
+    gap: 0 !important;
+    display: block !important;
+  }
+
+  .mn-pagina {
+    width: 1920px !important;
+    height: 1080px !important;
+    max-width: none !important;
+    aspect-ratio: auto !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    break-after: page;
+    break-inside: avoid;
+  }
+
+  .mn-pagina:last-child {
+    break-after: auto;
+  }
+}

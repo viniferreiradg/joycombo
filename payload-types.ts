@@ -79,6 +79,8 @@ export interface Config {
     propostas: Proposta;
     'orcamento-cases': OrcamentoCase;
     'orcamento-midias': OrcamentoMidia;
+    manuais: Manuai;
+    'manual-assets': ManualAsset;
     media: Media;
     users: User;
     'payload-kv': PayloadKv;
@@ -100,6 +102,8 @@ export interface Config {
     propostas: PropostasSelect<false> | PropostasSelect<true>;
     'orcamento-cases': OrcamentoCasesSelect<false> | OrcamentoCasesSelect<true>;
     'orcamento-midias': OrcamentoMidiasSelect<false> | OrcamentoMidiasSelect<true>;
+    manuais: ManuaisSelect<false> | ManuaisSelect<true>;
+    'manual-assets': ManualAssetsSelect<false> | ManualAssetsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
@@ -576,6 +580,218 @@ export interface Proposta {
   createdAt: string;
 }
 /**
+ * Cada manual gera um link para o cliente (/manual/nome-do-cliente). Rascunho só abre para você, logado.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "manuais".
+ */
+export interface Manuai {
+  id: number;
+  /**
+   * Rascunho não abre para o cliente (só para você, logado).
+   */
+  status: 'rascunho' | 'publicado';
+  /**
+   * Gerado do nome do cliente. Só letras minúsculas, números e hífen.
+   */
+  slug?: string | null;
+  cliente: string;
+  /**
+   * O mockup escolhido para a capa.
+   */
+  capa?: (number | null) | ManualAsset;
+  /**
+   * Até 750 caracteres (para caber na página). Linha em branco separa parágrafos.
+   */
+  textoApresentacao?: string | null;
+  /**
+   * Até 320 caracteres (para caber na página). Linha em branco separa parágrafos.
+   */
+  textoUniverso?: string | null;
+  /**
+   * Cada bloco vira uma página, na ordem daqui (arraste para reordenar).
+   */
+  universoVisual?:
+    | (
+        | {
+            /**
+             * Aparece numerado no manual (01. Título).
+             */
+            titulo: string;
+            /**
+             * Até 900 caracteres (para caber na página). Linha em branco separa parágrafos.
+             */
+            texto?: string | null;
+            /**
+             * A grade se ajusta sozinha à quantidade. Serve para marca gráfica, estilo fotográfico, assets, ícones, patterns.
+             */
+            imagens: (number | ManualAsset)[];
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'textoImagem';
+          }
+        | {
+            /**
+             * Aparece numerado no manual (01. Título).
+             */
+            titulo: string;
+            /**
+             * Até 650 caracteres (para caber na página). Linha em branco separa parágrafos.
+             */
+            texto?: string | null;
+            pares: {
+              antes: number | ManualAsset;
+              depois: number | ManualAsset;
+              id?: string | null;
+            }[];
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'antesDepois';
+          }
+        | {
+            /**
+             * Aparece numerado no manual (01. Título).
+             */
+            titulo: string;
+            /**
+             * Até 650 caracteres (para caber na página). Linha em branco separa parágrafos.
+             */
+            texto?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'paleta';
+          }
+        | {
+            /**
+             * Aparece numerado no manual (01. Título).
+             */
+            titulo: string;
+            /**
+             * Até 650 caracteres (para caber na página). Linha em branco separa parágrafos.
+             */
+            texto?: string | null;
+            fontes: {
+              nome: string;
+              papel?: string | null;
+              origem?: ('imagem' | 'google' | 'arquivo') | null;
+              /**
+               * O texto de exemplo escrito na fonte, exportado do Illustrator (PNG, de preferência com fundo transparente).
+               */
+              imagem?: (number | null) | ManualAsset;
+              exemplo?: string | null;
+              googleFamilia?: string | null;
+              /**
+               * Separados por ;
+               */
+              pesos?: string | null;
+              /**
+               * Um arquivo por peso.
+               */
+              arquivo?: (number | null) | ManualAsset;
+              /**
+               * Endereço livre (nem toda fonte é do Google).
+               */
+              link?: string | null;
+              id?: string | null;
+            }[];
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'tipografia';
+          }
+      )[]
+    | null;
+  paleta?:
+    | {
+        nome: string;
+        cores?:
+          | {
+              nome: string;
+              hex: string;
+              pantone?: string | null;
+              /**
+               * Agrupa as versões da marca sobre esta cor.
+               */
+              categoria: 'claro' | 'escuro' | 'colorido';
+              /**
+               * Ex.: 0 / 100 / 96 / 16
+               */
+              cmyk?: string | null;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Até 320 caracteres (para caber na página). Linha em branco separa parágrafos.
+   */
+  textoAplicacoes?: string | null;
+  /**
+   * Uma página por item.
+   */
+  aplicacoes?:
+    | {
+        nome?: string | null;
+        layout?: ('cheia' | 'dupla') | null;
+        imagem: number | ManualAsset;
+        imagem2?: (number | null) | ManualAsset;
+        id?: string | null;
+      }[]
+    | null;
+  tituloNormas?: string | null;
+  /**
+   * Até 320 caracteres (para caber na página). Linha em branco separa parágrafos.
+   */
+  textoNormas?: string | null;
+  /**
+   * Completa a frase: As proporções são calculadas usando uma referência "x", que é …
+   */
+  descricaoX?: string | null;
+  marcas?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Envie os PNGs com o mesmo nome dos SVGs (ex.: cerejabloom-horizontal-fundo-vermelho.png). No manual, ao clicar numa versão, dá para baixar em SVG e, se tiver PNG, em PNG.
+   */
+  pngsMarcas?: (number | ManualAsset)[] | null;
+  /**
+   * Aparece no menu do manual como "Baixar versões da marca". Sem o ZIP, o botão não aparece.
+   */
+  pacoteMarcas?: (number | null) | ManualAsset;
+  /**
+   * Até 700 caracteres (para caber na página). Linha em branco separa parágrafos.
+   */
+  textoCreditos?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "manual-assets".
+ */
+export interface ManualAsset {
+  id: number;
+  alt?: string | null;
+  prefix?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
@@ -672,6 +888,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'orcamento-midias';
         value: number | OrcamentoMidia;
+      } | null)
+    | ({
+        relationTo: 'manuais';
+        value: number | Manuai;
+      } | null)
+    | ({
+        relationTo: 'manual-assets';
+        value: number | ManualAsset;
       } | null)
     | ({
         relationTo: 'media';
@@ -940,6 +1164,130 @@ export interface OrcamentoCasesSelect<T extends boolean = true> {
  * via the `definition` "orcamento-midias_select".
  */
 export interface OrcamentoMidiasSelect<T extends boolean = true> {
+  alt?: T;
+  prefix?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "manuais_select".
+ */
+export interface ManuaisSelect<T extends boolean = true> {
+  status?: T;
+  slug?: T;
+  cliente?: T;
+  capa?: T;
+  textoApresentacao?: T;
+  textoUniverso?: T;
+  universoVisual?:
+    | T
+    | {
+        textoImagem?:
+          | T
+          | {
+              titulo?: T;
+              texto?: T;
+              imagens?: T;
+              id?: T;
+              blockName?: T;
+            };
+        antesDepois?:
+          | T
+          | {
+              titulo?: T;
+              texto?: T;
+              pares?:
+                | T
+                | {
+                    antes?: T;
+                    depois?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        paleta?:
+          | T
+          | {
+              titulo?: T;
+              texto?: T;
+              id?: T;
+              blockName?: T;
+            };
+        tipografia?:
+          | T
+          | {
+              titulo?: T;
+              texto?: T;
+              fontes?:
+                | T
+                | {
+                    nome?: T;
+                    papel?: T;
+                    origem?: T;
+                    imagem?: T;
+                    exemplo?: T;
+                    googleFamilia?: T;
+                    pesos?: T;
+                    arquivo?: T;
+                    link?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+      };
+  paleta?:
+    | T
+    | {
+        nome?: T;
+        cores?:
+          | T
+          | {
+              nome?: T;
+              hex?: T;
+              pantone?: T;
+              categoria?: T;
+              cmyk?: T;
+              id?: T;
+            };
+        id?: T;
+      };
+  textoAplicacoes?: T;
+  aplicacoes?:
+    | T
+    | {
+        nome?: T;
+        layout?: T;
+        imagem?: T;
+        imagem2?: T;
+        id?: T;
+      };
+  tituloNormas?: T;
+  textoNormas?: T;
+  descricaoX?: T;
+  marcas?: T;
+  pngsMarcas?: T;
+  pacoteMarcas?: T;
+  textoCreditos?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "manual-assets_select".
+ */
+export interface ManualAssetsSelect<T extends boolean = true> {
   alt?: T;
   prefix?: T;
   updatedAt?: T;

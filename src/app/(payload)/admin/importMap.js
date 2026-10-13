@@ -7,6 +7,12 @@ import { default as default_3daff0b1a3f9cb0864910863f33c078d } from '@/component
 import { default as default_41a732f0b8a225bd43adfcc94241972d } from '@/components/orcamentos/admin/PuxarPreco'
 import { default as default_66baa1a58592a655d77959d3bc290a21 } from '@/components/orcamentos/admin/PrazoTotal'
 import { default as default_026e01b2a443a885b31b8c3c3ddafd82 } from '@/components/orcamentos/admin/RowLabel'
+import { default as default_75823cf4dc252702cc971194cf587fc0 } from '@/components/manuais/admin/LinkManual'
+import { AvisoPaleta as AvisoPaleta_a39a7b9e57233f2b14beb9eabe37dab4 } from '@/components/manuais/admin/Aviso'
+import { default as default_ad8804f0ee4f3957f55302aa9e8d4928 } from '@/components/manuais/admin/ConferirFonte'
+import { default as default_ccbc0c36cce296c97012cb45d21fdb1f } from '@/components/manuais/admin/CorInfo'
+import { default as default_45738374b245aab25aa00fc20d6da3bd } from '@/components/manuais/admin/marcas/GerenciadorMarcas'
+import { default as default_9640857c5b64ab852d737c9a1722f6c4 } from '@/components/manuais/admin/ConferirPngs'
 import { RscEntryLexicalCell as RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
 import { RscEntryLexicalField as RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
 import { LexicalDiffComponent as LexicalDiffComponent_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
@@ -33,6 +39,7 @@ import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0
 import { AdminIcon as AdminIcon_b80a86fce1072afc84cd6a430a965697 } from '@/components/admin/AdminLogo'
 import { AdminLogo as AdminLogo_b80a86fce1072afc84cd6a430a965697 } from '@/components/admin/AdminLogo'
 import { VercelBlobClientUploadHandler as VercelBlobClientUploadHandler_16c82c5e25f430251a3e3ba57219ff4e } from '@payloadcms/storage-vercel-blob/client'
+import { LabView as LabView_d3a0799b81718121c0684d590a9d1616 } from '@/components/manuais/lab/LabView'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
 /** @type import('payload').ImportMap */
@@ -46,6 +53,12 @@ export const importMap = {
   "@/components/orcamentos/admin/PuxarPreco#default": default_41a732f0b8a225bd43adfcc94241972d,
   "@/components/orcamentos/admin/PrazoTotal#default": default_66baa1a58592a655d77959d3bc290a21,
   "@/components/orcamentos/admin/RowLabel#default": default_026e01b2a443a885b31b8c3c3ddafd82,
+  "@/components/manuais/admin/LinkManual#default": default_75823cf4dc252702cc971194cf587fc0,
+  "@/components/manuais/admin/Aviso#AvisoPaleta": AvisoPaleta_a39a7b9e57233f2b14beb9eabe37dab4,
+  "@/components/manuais/admin/ConferirFonte#default": default_ad8804f0ee4f3957f55302aa9e8d4928,
+  "@/components/manuais/admin/CorInfo#default": default_ccbc0c36cce296c97012cb45d21fdb1f,
+  "@/components/manuais/admin/marcas/GerenciadorMarcas#default": default_45738374b245aab25aa00fc20d6da3bd,
+  "@/components/manuais/admin/ConferirPngs#default": default_9640857c5b64ab852d737c9a1722f6c4,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalCell": RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalField": RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e,
   "@payloadcms/richtext-lexical/rsc#LexicalDiffComponent": LexicalDiffComponent_44fe37237e0ebf4470c9990d8cb7b07e,
@@ -72,5 +85,6 @@ export const importMap = {
   "@/components/admin/AdminLogo#AdminIcon": AdminIcon_b80a86fce1072afc84cd6a430a965697,
   "@/components/admin/AdminLogo#AdminLogo": AdminLogo_b80a86fce1072afc84cd6a430a965697,
   "@payloadcms/storage-vercel-blob/client#VercelBlobClientUploadHandler": VercelBlobClientUploadHandler_16c82c5e25f430251a3e3ba57219ff4e,
+  "@/components/manuais/lab/LabView#LabView": LabView_d3a0799b81718121c0684d590a9d1616,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
 }
