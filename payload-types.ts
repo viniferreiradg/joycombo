@@ -639,6 +639,28 @@ export interface Manuai {
              * Até 650 caracteres (para caber na página). Linha em branco separa parágrafos.
              */
             texto?: string | null;
+            imagens: (number | ManualAsset)[];
+            /**
+             * Cada arquivo vira um botão embaixo do texto (ex.: plugin de Photoshop). Aceita ZIP, CCX, ZXP, PDF e outros.
+             */
+            arquivos: {
+              nome: string;
+              arquivo: number | ManualAsset;
+              id?: string | null;
+            }[];
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'textoDownload';
+          }
+        | {
+            /**
+             * Aparece numerado no manual (01. Título).
+             */
+            titulo: string;
+            /**
+             * Até 650 caracteres (para caber na página). Linha em branco separa parágrafos.
+             */
+            texto?: string | null;
             pares: {
               antes: number | ManualAsset;
               depois: number | ManualAsset;
@@ -1198,6 +1220,22 @@ export interface ManuaisSelect<T extends boolean = true> {
               titulo?: T;
               texto?: T;
               imagens?: T;
+              id?: T;
+              blockName?: T;
+            };
+        textoDownload?:
+          | T
+          | {
+              titulo?: T;
+              texto?: T;
+              imagens?: T;
+              arquivos?:
+                | T
+                | {
+                    nome?: T;
+                    arquivo?: T;
+                    id?: T;
+                  };
               id?: T;
               blockName?: T;
             };
