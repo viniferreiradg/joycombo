@@ -9,7 +9,7 @@ export default function BotaoBaixar({ rotulo, url, filename }: { rotulo: string;
   return (
     <button
       type="button"
-      className="mn-baixar"
+      className="mn-arquivo"
       disabled={baixando}
       onClick={async () => {
         setBaixando(true)

@@ -1011,6 +1011,7 @@ html {
   .mn-pdf,
   .mn-menu-pdf,
   .mn-baixar,
+  .mn-arquivos,
   .mn-dica-baixar {
     display: none !important;
   }
@@ -1037,15 +1038,15 @@ html {
   }
 }
 
-/* arquivos de apoio para baixar (bloco Texto + imagens + download) */
-.mn-baixar-lista {
+/* arquivos de apoio para baixar (bloco Texto + imagens + download); no PDF nao servem */
+.mn-arquivos {
   display: flex;
   flex-wrap: wrap;
   gap: calc(var(--u) * 10);
   margin-top: calc(var(--u) * 28);
 }
 
-.mn-baixar {
+.mn-arquivo {
   font: inherit;
   font-size: calc(var(--u) * 16);
   font-weight: 600;
@@ -1056,7 +1057,11 @@ html {
   cursor: pointer;
 }
 
-.mn-baixar:disabled {
+.mn-arquivo:disabled {
   opacity: 0.6;
   cursor: wait;
+}
+
+.mn-palco-pdf .mn-arquivos {
+  display: none;
 }

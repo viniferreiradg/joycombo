@@ -54,6 +54,10 @@ export const ManualAssets: CollectionConfig = {
       // que ele classifica como text/plain pela extensao
       'application/pdf',
       'text/plain',
+      // O envio vai direto do navegador para o Blob, e o tipo salvo e o que o
+      // Blob devolve: extensao desconhecida (.ccx) volta como octet-stream. O
+      // conteudo continua conferido pelo Payload (o .ccx e detectado como zip)
+      'application/octet-stream',
     ],
   },
   fields: [{ name: 'alt', type: 'text', label: 'Texto alternativo' }],

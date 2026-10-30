@@ -250,7 +250,7 @@ function ConteudoDaPagina({ p, manual }: { p: Pagina; manual: Manual }) {
               </h2>
               <Paragrafos texto={p.bloco.texto} />
               {p.bloco.tipo === 'textoImagem' && p.bloco.arquivos?.length ? (
-                <div className="mn-baixar-lista">
+                <div className="mn-arquivos">
                   {p.bloco.arquivos.map((a) => (
                     <BotaoBaixar key={a.url} rotulo={a.rotulo} url={a.url} filename={a.filename} />
                   ))}
