@@ -43,7 +43,11 @@ export type GrupoSalvo = {
   medidas?: Record<string, { partes: Parte[]; medicao?: Medicao }>
 }
 
-export type RefX = { nome: string; svg: SvgSalvo; caixa: Caixa }
+/** divisor: o x e a altura do desenho dividida por ele (ex.: 2 = metade do "D"); sem divisor, a altura inteira */
+export type RefX = { nome: string; svg: SvgSalvo; caixa: Caixa; divisor?: number }
+
+/** Medida do x pela referencia */
+export const alturaDoX = (r: Pick<RefX, 'caixa' | 'divisor'>) => r.caixa.h / (r.divisor && r.divisor > 0 ? r.divisor : 1)
 
 export const TIPOS_INCORRETOS = [
   { tipo: 'condensacao', rotulo: 'Distorção por condensação' },

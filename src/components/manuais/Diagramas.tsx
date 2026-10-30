@@ -197,7 +197,7 @@ export function DiagramaSeguranca({ marca, medicao, largura = 900, altura = 640 
  * cota "x" na altura dele; sem referencia, um quadradinho "x".
  * `caixa` e o contorno real do desenho (o viewBox pode ter sobra).
  */
-export function LegendaX({ texto, referencia }: { texto: string; referencia?: { marca: Marca; caixa: Caixa } }) {
+export function LegendaX({ texto, referencia }: { texto: string; referencia?: { marca: Marca; caixa: Caixa; divisor?: number } }) {
   if (!referencia) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, color: '#6b6b6b', fontSize: 15 }}>
@@ -216,13 +216,15 @@ export function LegendaX({ texto, referencia }: { texto: string; referencia?: { 
   const k = alto / caixa.h
   const largo = caixa.w * k
   const cota = 30
+  // x menor que o desenho (ex.: metade do "D"): a cota sobe da base ate o x
+  const topo = alto - alto / (referencia.divisor && referencia.divisor > 0 ? referencia.divisor : 1)
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 16, color: '#6b6b6b', fontSize: 15 }}>
       <svg width={largo + cota} height={alto + 2} viewBox={`0 -1 ${largo + cota} ${alto + 2}`} style={{ flex: 'none', overflow: 'visible' }}>
-        <line x1={10} y1={0} x2={10} y2={alto} stroke={COR_COTA} strokeWidth={1.2} />
-        <line x1={5} y1={0} x2={15} y2={0} stroke={COR_COTA} strokeWidth={1.2} />
+        <line x1={10} y1={topo} x2={10} y2={alto} stroke={COR_COTA} strokeWidth={1.2} />
+        <line x1={5} y1={topo} x2={15} y2={topo} stroke={COR_COTA} strokeWidth={1.2} />
         <line x1={5} y1={alto} x2={15} y2={alto} stroke={COR_COTA} strokeWidth={1.2} />
-        <text x={0} y={alto / 2 + 5} fill={COR_COTA} fontFamily={FONTE} fontSize={15} textAnchor="end">
+        <text x={0} y={(topo + alto) / 2 + 5} fill={COR_COTA} fontFamily={FONTE} fontSize={15} textAnchor="end">
           x
         </text>
         <MarcaSvg marca={referencia.marca} area={caixa} x={cota} y={0} k={k} />

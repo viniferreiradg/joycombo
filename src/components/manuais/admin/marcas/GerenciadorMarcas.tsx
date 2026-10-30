@@ -22,6 +22,7 @@ import {
   CATEGORIAS,
   MARCAS_VAZIO,
   TIPOS_INCORRETOS,
+  alturaDoX,
   categoriaSugerida,
   ehBranco,
   fundosDoManual,
@@ -87,7 +88,7 @@ function Soltar({ rotulo, multiplo, aoSoltar }: { rotulo: string; multiplo?: boo
 /** Partes e medicao de uma versao com os ajustes do grupo (precisa do DOM) */
 function calcular(g: GrupoSalvo, formas: Forma[], refX: RefX | null | undefined) {
   const partes = agruparPartes(formas, g.proximidade).map((p) => ({ ...p, nome: g.ajustes[p.id]?.nome ?? p.nome, papel: g.ajustes[p.id]?.papel ?? p.papel }))
-  const cfg = refX ? { ...g.cfg, xFixo: refX.caixa.h } : { ...g.cfg, xFixo: undefined }
+  const cfg = refX ? { ...g.cfg, xFixo: alturaDoX(refX) } : { ...g.cfg, xFixo: undefined }
   const medicao = partes.some((p) => p.papel === 'parte') ? medir(partes, cfg) : undefined
   return { partes, medicao }
 }
@@ -158,7 +159,8 @@ export default function GerenciadorMarcas({ path }: { path: string }) {
         if (REF_X.test(f.name)) {
           const caixa = uniao(lerFormas(svg).map((x) => x.caixa))
           if (!caixa.h) throw new Error('sem formas visíveis')
-          refX = { nome: f.name, svg: { conteudo: svg.conteudo, viewBox: svg.viewBox }, caixa }
+          // reenviar o X.svg mantem a divisao escolhida
+          refX = { nome: f.name, svg: { conteudo: svg.conteudo, viewBox: svg.viewBox }, caixa, divisor: dados.refX?.divisor }
           continue
         }
         const anterior = dados.versoes.find((v) => v.arquivo === f.name)
@@ -773,8 +775,24 @@ export default function GerenciadorMarcas({ path }: { path: string }) {
             <span style={{ fontSize: 13 }}>
               {dados.refX.nome}
               <br />
-              <span style={{ color: cinza }}>A altura deste desenho é o x de todas as versões.</span>
+              <span style={{ color: cinza }}>
+                {(dados.refX.divisor || 1) === 1 ? 'A altura deste desenho é o x de todas as versões.' : `O x de todas as versões é a altura deste desenho dividida por ${String(dados.refX.divisor).replace('.', ',')}.`}
+              </span>
             </span>
+            <label style={{ display: 'flex', gap: 6, alignItems: 'center', fontSize: 13 }}>
+              x = altura ÷
+              <input
+                style={{ ...campo, width: 70 }}
+                type="number"
+                min={1}
+                step={0.5}
+                value={dados.refX.divisor || 1}
+                onChange={(e) => {
+                  const n = Number(e.target.value)
+                  salvar({ refX: { ...dados.refX!, divisor: n > 0 ? n : 1 } })
+                }}
+              />
+            </label>
             <button type="button" style={botao} onClick={() => salvar({ refX: null })}>
               Remover
             </button>

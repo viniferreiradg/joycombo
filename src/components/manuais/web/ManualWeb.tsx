@@ -330,7 +330,7 @@ function ConteudoDaPagina({ p, manual }: { p: Pagina; manual: Manual }) {
                 </h2>
                 <p>{dim ? TEXTO_DIMENSOES : TEXTO_SEGURANCA}</p>
               </div>
-              <LegendaX texto={p.textoX} referencia={p.refX ? { marca: p.refX.svg, caixa: p.refX.caixa } : undefined} />
+              <LegendaX texto={p.textoX} referencia={p.refX ? { marca: p.refX.svg, caixa: p.refX.caixa, divisor: p.refX.divisor } : undefined} />
             </div>
             <div className="mn-visual mn-desenhos" style={{ gridTemplateColumns: `repeat(${colunas}, minmax(0, 1fr))` }}>
               {p.desenhos.map((d, i) => (
