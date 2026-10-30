@@ -57,6 +57,44 @@ const TextoImagem: Block = {
   ],
 }
 
+const TextoDownload: Block = {
+  slug: 'textoDownload',
+  labels: { singular: 'Texto + imagens + download', plural: 'Texto + imagens + download' },
+  fields: [
+    titulo(),
+    texto(LIMITES.textoBlocoComparacao),
+    {
+      name: 'imagens',
+      type: 'upload',
+      relationTo: ASSETS,
+      hasMany: true,
+      required: true,
+      minRows: 1,
+      maxRows: 4,
+      label: 'Imagens (1 a 4)',
+    },
+    {
+      name: 'arquivos',
+      type: 'array',
+      label: 'Arquivos para baixar',
+      labels: { singular: 'Arquivo', plural: 'Arquivos' },
+      minRows: 1,
+      maxRows: 4,
+      required: true,
+      admin: { components: rowLabel.components, description: 'Cada arquivo vira um botão embaixo do texto (ex.: plugin de Photoshop). Aceita ZIP, CCX, ZXP, PDF e outros.' },
+      fields: [
+        {
+          type: 'row',
+          fields: [
+            { name: 'nome', type: 'text', label: 'Texto do botão', required: true, admin: { width: '50%', placeholder: 'Baixar plugin para Photoshop' } },
+            { name: 'arquivo', type: 'upload', relationTo: ASSETS, required: true, label: 'Arquivo', admin: { width: '50%' } },
+          ],
+        },
+      ],
+    },
+  ],
+}
+
 const AntesDepois: Block = {
   slug: 'antesDepois',
   labels: { singular: 'Texto + antes/depois', plural: 'Texto + antes/depois' },
@@ -280,7 +318,7 @@ export const Manuais: CollectionConfig = {
               label: 'Páginas do universo visual',
               labels: { singular: 'Página', plural: 'Páginas' },
               admin: { description: 'Cada bloco vira uma página, na ordem daqui (arraste para reordenar).' },
-              blocks: [TextoImagem, AntesDepois, PaletaBloco, Tipografia],
+              blocks: [TextoImagem, TextoDownload, AntesDepois, PaletaBloco, Tipografia],
             },
           ],
         },

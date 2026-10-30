@@ -2,6 +2,7 @@ import Image from './ImagemManual'
 import { Logo } from '@/components/Brand'
 import MenuLateral, { type ItemMenu } from '@/components/manuais/web/MenuLateral'
 import BaixarVersao from '@/components/manuais/web/BaixarVersao'
+import BotaoBaixar from '@/components/manuais/web/BotaoBaixar'
 import { COR_COTA, DiagramaDimensoes, DiagramaSeguranca, LegendaX } from '@/components/manuais/Diagramas'
 import { DesenhoIncorreto, DesenhoSimples } from '@/components/manuais/Incorretos'
 import type { Bloco, Fonte, Img, Manual, Pagina } from '@/lib/manuais/publico'
@@ -248,6 +249,13 @@ function ConteudoDaPagina({ p, manual }: { p: Pagina; manual: Manual }) {
                 {dois(p.ordem)}. {p.bloco.titulo}
               </h2>
               <Paragrafos texto={p.bloco.texto} />
+              {p.bloco.tipo === 'textoImagem' && p.bloco.arquivos?.length ? (
+                <div className="mn-baixar-lista">
+                  {p.bloco.arquivos.map((a) => (
+                    <BotaoBaixar key={a.url} rotulo={a.rotulo} url={a.url} filename={a.filename} />
+                  ))}
+                </div>
+              ) : null}
             </div>
             <div className="mn-visual">
               <VisualDoBloco bloco={p.bloco} manual={manual} />

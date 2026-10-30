@@ -27,7 +27,7 @@ export const ManualAssets: CollectionConfig = {
   upload: {
     staticDir: path.resolve(process.cwd(), 'public/manual-assets'),
     adminThumbnail: ({ doc }) => (String(doc.mimeType || '').startsWith('image/') ? (doc.url as string) || null : null),
-    // Imagens, fontes web e o ZIP das marcas (os SVGs ficam no JSON do manual).
+    // Imagens, fontes web, o ZIP das marcas e arquivos de apoio (os SVGs ficam no JSON do manual).
     mimeTypes: [
       'image/png',
       'image/jpeg',
@@ -48,6 +48,12 @@ export const ManualAssets: CollectionConfig = {
       // pacote com todas as marcas (o Windows manda x-zip-compressed)
       'application/zip',
       'application/x-zip-compressed',
+      // arquivos de apoio para baixar (bloco Texto + imagens + download). Plugin
+      // de Photoshop (.ccx, .zxp) e ZIP por dentro e passa como zip; PDF; e
+      // formatos que o Payload nao reconhece pelo conteudo (.abr, .atn...),
+      // que ele classifica como text/plain pela extensao
+      'application/pdf',
+      'text/plain',
     ],
   },
   fields: [{ name: 'alt', type: 'text', label: 'Texto alternativo' }],

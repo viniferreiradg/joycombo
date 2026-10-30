@@ -1036,3 +1036,27 @@ html {
     break-after: auto;
   }
 }
+
+/* arquivos de apoio para baixar (bloco Texto + imagens + download) */
+.mn-baixar-lista {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--u) * 10);
+  margin-top: calc(var(--u) * 28);
+}
+
+.mn-baixar {
+  font: inherit;
+  font-size: calc(var(--u) * 16);
+  font-weight: 600;
+  background: var(--mn-preto);
+  color: #ffffff;
+  border: 0;
+  padding: calc(var(--u) * 12) calc(var(--u) * 20);
+  cursor: pointer;
+}
+
+.mn-baixar:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}

@@ -16,6 +16,8 @@ type Linha = Record<string, unknown>
 const texto = (v: unknown) => (typeof v === 'string' ? v.trim() : '')
 
 export type Img = { url: string; alt: string; width: number; height: number }
+/** arquivo de apoio para baixar (botao no bloco Texto + imagens + download) */
+export type ArquivoBaixar = { rotulo: string; url: string; filename: string }
 
 function img(v: unknown): Img | null {
   const m = v && typeof v === 'object' ? (v as MediaDoc) : null
@@ -41,7 +43,7 @@ export type Fonte = {
 }
 
 export type Bloco =
-  | { tipo: 'textoImagem'; titulo: string; texto: string[]; imagens: Img[] }
+  | { tipo: 'textoImagem'; titulo: string; texto: string[]; imagens: Img[]; arquivos?: ArquivoBaixar[] }
   | { tipo: 'antesDepois'; titulo: string; texto: string[]; pares: { antes: Img; depois: Img }[] }
   | { tipo: 'paleta'; titulo: string; texto: string[] }
   | { tipo: 'tipografia'; titulo: string; texto: string[]; fontes: Fonte[] }
@@ -112,6 +114,14 @@ function bloco(l: Linha, fontesVistas: { n: number }): Bloco | null {
     case 'textoImagem': {
       const imagens = ((l.imagens as unknown[]) || []).map(img).filter((x): x is Img => Boolean(x))
       return imagens.length ? { tipo: 'textoImagem', titulo, texto: corpo, imagens } : null
+    }
+    case 'textoDownload': {
+      const imagens = ((l.imagens as unknown[]) || []).map(img).filter((x): x is Img => Boolean(x))
+      const arquivos = ((l.arquivos as Linha[]) || []).flatMap((a) => {
+        const m = a.arquivo && typeof a.arquivo === 'object' ? (a.arquivo as MediaDoc & { filename?: string }) : null
+        return m?.url && m.filename ? [{ rotulo: texto(a.nome) || 'Baixar arquivo', url: m.url, filename: m.filename }] : []
+      })
+      return imagens.length ? { tipo: 'textoImagem', titulo, texto: corpo, imagens, arquivos } : null
     }
     case 'antesDepois': {
       const pares = ((l.pares as Linha[]) || [])
