@@ -22,6 +22,7 @@ import {
   CATEGORIAS,
   MARCAS_VAZIO,
   TIPOS_INCORRETOS,
+  ajustesDaVersao,
   alturaDoX,
   categoriaSugerida,
   ehBranco,
@@ -85,10 +86,11 @@ function Soltar({ rotulo, multiplo, aoSoltar }: { rotulo: string; multiplo?: boo
   )
 }
 
-/** Partes e medicao de uma versao com os ajustes do grupo (precisa do DOM) */
-function calcular(g: GrupoSalvo, formas: Forma[], refX: RefX | null | undefined) {
-  const partes = agruparPartes(formas, g.proximidade).map((p) => ({ ...p, nome: g.ajustes[p.id]?.nome ?? p.nome, papel: g.ajustes[p.id]?.papel ?? p.papel }))
-  const cfg = refX ? { ...g.cfg, xFixo: alturaDoX(refX) } : { ...g.cfg, xFixo: undefined }
+/** Partes e medicao de uma versao com os ajustes dela (precisa do DOM) */
+function calcular(g: GrupoSalvo, versaoId: string, formas: Forma[], refX: RefX | null | undefined) {
+  const aj = ajustesDaVersao(g, versaoId)
+  const partes = agruparPartes(formas, aj.proximidade).map((p) => ({ ...p, nome: aj.ajustes[p.id]?.nome ?? p.nome, papel: aj.ajustes[p.id]?.papel ?? p.papel }))
+  const cfg = refX ? { ...aj.cfg, xFixo: alturaDoX(refX) } : { ...aj.cfg, xFixo: undefined }
   const medicao = partes.some((p) => p.papel === 'parte') ? medir(partes, cfg) : undefined
   return { partes, medicao }
 }
@@ -135,7 +137,7 @@ export default function GerenciadorMarcas({ path }: { path: string }) {
   useEffect(() => {
     const grupos = dados.grupos.map((g) => {
       const medidas: NonNullable<GrupoSalvo['medidas']> = {}
-      for (const v of dados.versoes.filter((x) => x.grupo === g.id)) medidas[v.id] = calcular(g, formasDe(v), dados.refX)
+      for (const v of dados.versoes.filter((x) => x.grupo === g.id)) medidas[v.id] = calcular(g, v.id, formasDe(v), dados.refX)
       // tira campos de antes (mestre, partes e medicao unicos)
       const { mestre: _m, partes: _p, medicao: _md, ...resto } = g as GrupoSalvo & { mestre?: unknown; partes?: unknown; medicao?: unknown }
       void _m
@@ -266,7 +268,7 @@ export default function GerenciadorMarcas({ path }: { path: string }) {
     </div>
   )
 
-  // ------------------------------------------------------------ ajustes de medida de um grupo
+  // ------------------------------------------------------------ ajustes de medida de cada versao do grupo
   const painelMedidas = (g: GrupoSalvo) => {
     const versoes = dados.versoes.filter((v) => v.grupo === g.id).sort((a, b) => a.arquivo.localeCompare(b.arquivo))
     const atual = versoes.find((v) => v.id === previa[g.id]) || versoes[0]
@@ -274,8 +276,15 @@ export default function GerenciadorMarcas({ path }: { path: string }) {
     const fundoDesenho = (atual && corDe(atual.fundo)?.hex) || '#fff'
     const partes = medida?.partes || []
     const m = medida?.medicao
-    const cfg = g.cfg
-    const mudarCfg = (mud: Partial<typeof cfg>) => mudarGrupo(g.id, { cfg: { ...cfg, ...mud } })
+    // cada versao tem os proprios ajustes (comecam iguais aos do grupo)
+    const aj = atual ? ajustesDaVersao(g, atual.id) : { proximidade: g.proximidade, ajustes: g.ajustes, cfg: g.cfg }
+    const mudarAjustes = (mud: Partial<typeof aj>) => atual && mudarGrupo(g.id, { porVersao: { ...g.porVersao, [atual.id]: { ...aj, ...mud } } })
+    const copiarParaTodas = () => {
+      if (!atual || !window.confirm('Copiar os ajustes desta versão para todas as versões do grupo? Os ajustes delas serão substituídos.')) return
+      mudarGrupo(g.id, { porVersao: Object.fromEntries(versoes.map((v) => [v.id, structuredClone(aj)])) })
+    }
+    const cfg = aj.cfg
+    const mudarCfg = (mud: Partial<typeof cfg>) => mudarAjustes({ cfg: { ...cfg, ...mud } })
     const iguais = cfg.margensIguais !== false
     const mudarMargem = (lado: keyof Margens, v: number) => mudarCfg({ margens: { ...cfg.margens, [lado]: v } })
     const opcoesX: { valor: BaseX; rotulo: string }[] = [
@@ -288,7 +297,7 @@ export default function GerenciadorMarcas({ path }: { path: string }) {
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(260px, 320px) minmax(0, 1fr)', gap: 20, alignItems: 'start' }}>
         <div style={{ display: 'grid', gap: 12, fontSize: 13, minWidth: 0 }}>
           <label style={{ display: 'grid', gap: 4 }}>
-            Prévia
+            Versão
             <select style={campo} value={atual?.id || ''} onChange={(e) => setPrevia((p) => ({ ...p, [g.id]: e.target.value }))}>
               {versoes.map((v) => (
                 <option key={v.id} value={v.id}>
@@ -296,19 +305,24 @@ export default function GerenciadorMarcas({ path }: { path: string }) {
                 </option>
               ))}
             </select>
-            <span style={{ fontSize: 12, color: cinza }}>Todas as versões do grupo são medidas e entram no manual. Os ajustes abaixo valem para todas.</span>
+            <span style={{ fontSize: 12, color: cinza }}>Os ajustes abaixo valem só para esta versão. Escolha outra versão na lista para ajustar a dela.</span>
           </label>
+          {versoes.length > 1 ? (
+            <button type="button" style={{ ...botao, justifySelf: 'start', fontSize: 12 }} onClick={copiarParaTodas}>
+              Copiar estes ajustes para as outras versões do grupo
+            </button>
+          ) : null}
           <div style={{ display: 'grid', gap: 6 }}>
             <span>Partes detectadas</span>
             <label style={{ display: 'grid', gap: 2, color: cinza, fontSize: 12 }}>
-              Juntar formas próximas: {Math.round(g.proximidade * 100)}%
-              <input type="range" min={0} max={0.2} step={0.005} value={g.proximidade} onChange={(e) => mudarGrupo(g.id, { proximidade: Number(e.target.value), ajustes: {} })} />
+              Juntar formas próximas: {Math.round(aj.proximidade * 100)}%
+              <input type="range" min={0} max={0.2} step={0.005} value={aj.proximidade} onChange={(e) => mudarAjustes({ proximidade: Number(e.target.value), ajustes: {} })} />
             </label>
             {partes.map((p) => (
               <div key={p.id} style={{ display: 'grid', gridTemplateColumns: '14px minmax(0,1fr) 110px', gap: 6, alignItems: 'center' }}>
                 <span style={{ width: 12, height: 12, background: p.cor, border: borda }} />
-                <input style={campo} value={p.nome} onChange={(e) => mudarGrupo(g.id, { ajustes: { ...g.ajustes, [p.id]: { ...g.ajustes[p.id], nome: e.target.value } } })} />
-                <select style={campo} value={p.papel} onChange={(e) => mudarGrupo(g.id, { ajustes: { ...g.ajustes, [p.id]: { ...g.ajustes[p.id], papel: e.target.value as Papel } } })}>
+                <input style={campo} value={p.nome} onChange={(e) => mudarAjustes({ ajustes: { ...aj.ajustes, [p.id]: { ...aj.ajustes[p.id], nome: e.target.value } } })} />
+                <select style={campo} value={p.papel} onChange={(e) => mudarAjustes({ ajustes: { ...aj.ajustes, [p.id]: { ...aj.ajustes[p.id], papel: e.target.value as Papel } } })}>
                   <option value="parte">Parte</option>
                   <option value="sombra">Sombra</option>
                   <option value="ignorar">Ignorar</option>
@@ -402,30 +416,37 @@ export default function GerenciadorMarcas({ path }: { path: string }) {
               <div style={{ border: borda, borderRadius: 4, padding: 8, background: fundoDesenho }}>
                 <DiagramaSeguranca marca={atual.svg} medicao={m} largura={1140} altura={620} />
               </div>
-              <details>
-                <summary style={{ cursor: 'pointer', fontSize: 13, color: cinza }}>Cotas ({m.segmentos.length}): ocultar ou trocar o texto</summary>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 6, marginTop: 8 }}>
-                  {m.segmentos.map((s) => (
-                    <div key={s.id} style={{ display: 'grid', gridTemplateColumns: '18px 70px 1fr', gap: 6, alignItems: 'center', fontSize: 12, opacity: s.oculto ? 0.5 : 1 }}>
-                      <input type="checkbox" checked={!s.oculto} onChange={(e) => mudarCfg({ ocultos: e.target.checked ? cfg.ocultos.filter((id) => id !== s.id) : [...cfg.ocultos, s.id] })} />
-                      <span style={{ color: cinza }}>
-                        {s.eixo === 'h' ? 'Largura' : 'Altura'} {s.id.slice(1)}
-                      </span>
-                      <input
-                        style={{ ...campo, padding: '3px 6px', fontSize: 12 }}
-                        placeholder={formatX(s.valor)}
-                        value={cfg.rotulos[s.id] || ''}
-                        onChange={(e) => {
-                          const rotulos = { ...cfg.rotulos }
-                          if (e.target.value) rotulos[s.id] = e.target.value
-                          else delete rotulos[s.id]
-                          mudarCfg({ rotulos })
-                        }}
-                      />
-                    </div>
-                  ))}
+              <div style={{ display: 'grid', gap: 6 }}>
+                <span style={{ fontSize: 13 }}>Números das cotas desta versão</span>
+                <span style={{ fontSize: 12, color: cinza }}>Em branco, vale o número calculado (cinza). Escreva por cima para trocar (ex.: 2x). A caixinha oculta a cota.</span>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 6 }}>
+                  {/* largura e altura totais (sempre aparecem) e depois as cotas internas */}
+                  {[{ ...m.largura, nome: 'Largura total' }, { ...m.altura, nome: 'Altura total' }, ...m.segmentos.map((s) => ({ ...s, nome: `${s.eixo === 'h' ? 'Largura' : 'Altura'} ${s.id.slice(1)}` }))].map((s) => {
+                    const total = s.id === 'largura' || s.id === 'altura'
+                    return (
+                      <div key={s.id} style={{ display: 'grid', gridTemplateColumns: '18px 84px 1fr', gap: 6, alignItems: 'center', fontSize: 12, opacity: s.oculto ? 0.5 : 1 }}>
+                        {total ? (
+                          <span />
+                        ) : (
+                          <input type="checkbox" checked={!s.oculto} onChange={(e) => mudarCfg({ ocultos: e.target.checked ? cfg.ocultos.filter((id) => id !== s.id) : [...cfg.ocultos, s.id] })} />
+                        )}
+                        <span style={{ color: cinza }}>{s.nome}</span>
+                        <input
+                          style={{ ...campo, padding: '3px 6px', fontSize: 12 }}
+                          placeholder={formatX(s.valor)}
+                          value={cfg.rotulos[s.id] || ''}
+                          onChange={(e) => {
+                            const rotulos = { ...cfg.rotulos }
+                            if (e.target.value) rotulos[s.id] = e.target.value
+                            else delete rotulos[s.id]
+                            mudarCfg({ rotulos })
+                          }}
+                        />
+                      </div>
+                    )
+                  })}
                 </div>
-              </details>
+              </div>
             </>
           ) : (
             <p style={{ color: cinza, fontSize: 13 }}>Sem partes para medir nesta versão.</p>

@@ -23,8 +23,8 @@ export type Versao = {
 /**
  * Grupo: versoes organizadas a mao. Cada grupo decide se aparece em Versoes,
  * Dimensoes e Area de seguranca; nas duas ultimas, cada versao do grupo ganha
- * o proprio desenho. Os ajustes (partes, sombra, margens, cotas) valem para
- * todas as versoes do grupo.
+ * o proprio desenho. Os ajustes (partes, sombra, margens, cotas) sao de cada
+ * versao (porVersao); os do grupo ficam como padrao de quem ainda nao tem os seus.
  */
 export type GrupoSalvo = {
   id: string
@@ -39,11 +39,20 @@ export type GrupoSalvo = {
   proximidade: number
   ajustes: Record<string, { nome?: string; papel?: Papel }>
   cfg: ConfigLockup
+  /** ajustes proprios de cada versao (id da versao) */
+  porVersao?: Record<string, AjustesVersao>
   /** partes e medicao de cada versao do grupo (id da versao), calculadas no painel; a pagina publica nao mede */
   medidas?: Record<string, { partes: Parte[]; medicao?: Medicao }>
 }
 
 /** divisor: o x e a altura do desenho dividida por ele (ex.: 2 = metade do "D"); sem divisor, a altura inteira */
+export type AjustesVersao = Pick<GrupoSalvo, 'proximidade' | 'ajustes' | 'cfg'>
+
+/** Ajustes de medida de uma versao: os dela ou, se ainda nao tem, os do grupo */
+export function ajustesDaVersao(g: GrupoSalvo, versaoId: string): AjustesVersao {
+  return g.porVersao?.[versaoId] ?? { proximidade: g.proximidade, ajustes: g.ajustes, cfg: g.cfg }
+}
+
 export type RefX = { nome: string; svg: SvgSalvo; caixa: Caixa; divisor?: number }
 
 /** Medida do x pela referencia */
