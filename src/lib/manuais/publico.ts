@@ -2,7 +2,7 @@ import { headers } from 'next/headers'
 import { getClient, type MediaDoc } from '@/lib/data'
 import { paragraphs } from '@/lib/format'
 import { formatCmyk, formatRgb, hexParaRgb, hexValido, rgbParaCmyk } from './cores'
-import { type GrupoSalvo, type MarcasData, type RefX, type SvgSalvo, type TipoIncorreto, CATEGORIAS, coresDeFundo, legivel, ligarPngs, svgSeguro } from './marcas'
+import { type GrupoSalvo, type MarcasData, type RefX, type SvgSalvo, type TipoIncorreto, CATEGORIAS, ehBranco, fundosDoManual, legivel, ligarPngs, svgSeguro } from './marcas'
 import { corSemContraste } from '@/components/manuais/Incorretos'
 import type { Medicao } from './medicao'
 import { slugify } from './padroes'
@@ -140,33 +140,41 @@ const seguro = (svg: SvgSalvo): SvgSalvo => ({ conteudo: svgSeguro(svg.conteudo)
 function normas(marcas: MarcasData | null, paleta: GrupoCores[], secao: string, descricaoX: string, pngs: { filename: string; url: string }[]) {
   if (!marcas?.versoes?.length || !marcas.grupos?.length) return []
   const { porVersao: pngDe } = ligarPngs(marcas.versoes, pngs)
-  const cores = coresDeFundo(paleta.map((g) => ({ cores: g.cores.map((c) => ({ nome: c.nome, hex: c.hex, categoria: c.categoria })) })))
+  const cores = fundosDoManual(marcas, paleta.map((g) => ({ cores: g.cores.map((c) => ({ nome: c.nome, hex: c.hex, categoria: c.categoria })) }))).filter((c) => /^#[0-9a-f]{6}$/i.test(c.hex))
   const grupos = marcas.grupos.filter((g) => marcas.versoes.some((v) => v.grupo === g.id))
   const paginas: Record<string, unknown>[] = []
 
   // 01. versoes da marca: uma pagina por cor de fundo (claros, escuros,
-  // coloridos); as marcas seguem a ordem dos grupos e fluem por uma grade de
-  // ate 6 (2 x 3), sempre no mesmo tamanho; passando de 6, continua na seguinte
+  // coloridos); as marcas seguem a ordem dos grupos numa grade de ate 6 (2 x 3),
+  // sempre no mesmo tamanho. Um grupo nao se divide entre paginas: se nao cabe
+  // no que sobrou, comeca na seguinte (grupo com mais de 6 quebra de 6 em 6)
   const nasVersoes = grupos.filter((g) => g.emVersoes)
   for (const cat of CATEGORIAS) {
     for (const cor of cores.filter((c) => c.categoria === cat.valor)) {
-      const itens: ItemVersao[] = nasVersoes.flatMap((g) =>
-        marcas.versoes
+      const folhas: ItemVersao[][] = []
+      for (const g of nasVersoes) {
+        const doGrupo: ItemVersao[] = marcas.versoes
           .filter((v) => v.grupo === g.id && v.fundo === cor.slug)
           .sort((a, b) => a.arquivo.localeCompare(b.arquivo))
-          .map((v) => ({ rotulo: g.nome, svg: seguro(v.svg), arquivo: v.arquivo, png: pngDe.get(v.id) ?? null })),
-      )
-      for (let i = 0; i < itens.length; i += 6) {
+          .map((v) => ({ rotulo: g.nome, svg: seguro(v.svg), arquivo: v.arquivo, png: pngDe.get(v.id) ?? null }))
+        for (let i = 0; i < doGrupo.length; i += 6) {
+          const pedaco = doGrupo.slice(i, i + 6)
+          const atual = folhas[folhas.length - 1]
+          if (atual && atual.length + pedaco.length <= 6) atual.push(...pedaco)
+          else folhas.push(pedaco)
+        }
+      }
+      folhas.forEach((itens, n) =>
         paginas.push({
-          id: `versoes-${cor.slug}-${i / 6 + 1}`,
+          id: `versoes-${cor.slug}-${n + 1}`,
           secao,
           tipo: 'versoes',
           ordem: 1,
           subtitulo: `${cat.titulo} · ${cor.nome}`,
           fundo: cor.hex,
-          itens: itens.slice(i, i + 6),
-        })
-      }
+          itens,
+        }),
+      )
     }
   }
   if (paginas.length) paginas[0].sub = 'Versões da Marca'
@@ -187,7 +195,7 @@ function normas(marcas: MarcasData | null, paleta: GrupoCores[], secao: string, 
           rotulo: `${g.nome} · ${repetido ? `${legivel(v.variante)} · ` : ''}${nomeCor(v.fundo)}`,
           svg: seguro(v.svg),
           medicao,
-          fundo: cor && cor.slug !== 'branco' ? cor.hex : null,
+          fundo: ehBranco(cor) ? null : cor!.hex,
         },
       ]
     })
@@ -209,7 +217,7 @@ function normas(marcas: MarcasData | null, paleta: GrupoCores[], secao: string, 
   // 04. reducao maxima: uma marca por grupo marcado, com a largura minima testada
   const fundoDe = (slug: string) => {
     const c = cores.find((x) => x.slug === slug)
-    return c && c.slug !== 'branco' ? c.hex : null
+    return ehBranco(c) ? null : c!.hex
   }
   const daPaginaClara = (versoes: typeof marcas.versoes) =>
     [...versoes].sort((a, b) => {
@@ -233,7 +241,7 @@ function normas(marcas: MarcasData | null, paleta: GrupoCores[], secao: string, 
     const grupoRef = marcas.grupos.find((g) => g.id === ref.grupo)
     const medicao = grupoRef?.medidas?.[ref.id]?.medicao || null
     const svgRef = seguro(ref.svg)
-    const contraste = corSemContraste(svgRef, cores.filter((c) => c.slug !== 'branco').map((c) => c.hex))
+    const contraste = corSemContraste(svgRef, cores.filter((c) => !ehBranco(c)).map((c) => c.hex))
     const itens: ItemIncorretoView[] = inc.itens.flatMap((it) => {
       const svg = it.tipo === 'personalizado' ? (it.svg ? seguro(it.svg) : null) : svgRef
       return svg ? [{ id: it.id, tipo: it.tipo, rotulo: it.rotulo, svg, medicao, contraste, fundo: fundoDe(ref.fundo) }] : []

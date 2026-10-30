@@ -2,6 +2,7 @@
 
 // Aba "Normas de uso": versoes da marca. Tudo fica no campo JSON "marcas":
 // - referencia x (um SVG, ex.: o "c"), cuja altura e o x de todas as versoes;
+// - fundos (nome + hex) criados a mao; cada versao escolhe o dela;
 // - versoes (SVGs sanitizados e prefixados no navegador, na hora do upload);
 // - grupos criados a mao, cada um dizendo se entra em Versoes, Dimensoes e
 //   Area de seguranca, com a medicao de cada versao ja calculada (a pagina
@@ -21,7 +22,9 @@ import {
   CATEGORIAS,
   MARCAS_VAZIO,
   TIPOS_INCORRETOS,
-  coresDeFundo,
+  categoriaSugerida,
+  ehBranco,
+  fundosDoManual,
   lerNomeDoArquivo,
   novoGrupo,
   sugerirGrupos,
@@ -102,7 +105,7 @@ export default function GerenciadorMarcas({ path }: { path: string }) {
     const v = reduceFieldsToValues(campos, true) as { cliente?: string; paleta?: { cores?: { nome: string; hex: string; categoria: string }[] }[] }
     return { cliente: v.cliente || '', paleta: (v.paleta || []).map((g) => ({ cores: g.cores || [] })) }
   }, [campos])
-  const cores = useMemo(() => coresDeFundo(paleta), [paleta])
+  const cores = useMemo(() => fundosDoManual(dados, paleta), [dados, paleta])
   const corDe = (slug: string): CorFundo | undefined => cores.find((c) => c.slug === slug)
 
   // ids das versoes que acabaram de entrar (lista para conferir fundo e grupo)
@@ -162,8 +165,9 @@ export default function GerenciadorMarcas({ path }: { path: string }) {
         novos.push({
           id: crypto.randomUUID(),
           arquivo: f.name,
-          ...lerNomeDoArquivo(f.name, cliente, cores),
-          // reenviar um arquivo mantem o grupo dele
+          ...lerNomeDoArquivo(f.name, cliente),
+          // reenviar um arquivo mantem o fundo e o grupo dele
+          fundo: anterior?.fundo ?? '',
           grupo: anterior?.grupo ?? null,
           svg: { conteudo: svg.conteudo, viewBox: svg.viewBox },
         })
@@ -238,7 +242,8 @@ export default function GerenciadorMarcas({ path }: { path: string }) {
             <Svg svg={v.svg} fundo={corDe(v.fundo)?.hex} altura={42} />
           </div>
           <span style={{ fontSize: 12, wordBreak: 'break-all' }}>{v.arquivo}</span>
-          <select style={campo} value={v.fundo} onChange={(e) => mudarVersao(v.id, { fundo: e.target.value })}>
+          <select style={campo} value={corDe(v.fundo) ? v.fundo : ''} onChange={(e) => mudarVersao(v.id, { fundo: e.target.value })}>
+            <option value="">Escolha o fundo</option>
             {cores.map((c) => (
               <option key={c.slug} value={c.slug}>
                 {c.nome} ({c.categoria})
@@ -510,7 +515,7 @@ export default function GerenciadorMarcas({ path }: { path: string }) {
               <Svg svg={v.svg} fundo={corDe(v.fundo)?.hex} altura={56} />
               <div style={{ fontSize: 11, padding: '3px 6px', color: cinza, display: 'flex', justifyContent: 'space-between', gap: 4 }}>
                 <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  {corDe(v.fundo)?.nome || v.fundo}
+                  {corDe(v.fundo)?.nome || 'Sem fundo'}
                 </span>
                 <button type="button" title="Tirar do grupo" style={{ all: 'unset', cursor: 'pointer' }} onClick={() => mudarVersao(v.id, { grupo: null })}>
                   ×
@@ -546,7 +551,7 @@ export default function GerenciadorMarcas({ path }: { path: string }) {
     const inc = dados.incorretos || { referencia: '', itens: [] }
     const ref = dados.versoes.find((v) => v.id === inc.referencia) || dados.versoes.find((v) => v.grupo) || dados.versoes[0]
     const medicaoRef = ref ? dados.grupos.find((g) => g.id === ref.grupo)?.medidas?.[ref.id]?.medicao : undefined
-    const contraste = ref ? corSemContraste(ref.svg, cores.filter((c) => c.slug !== 'branco').map((c) => c.hex)) : '#eeeeee'
+    const contraste = ref ? corSemContraste(ref.svg, cores.filter((c) => !ehBranco(c)).map((c) => c.hex)) : '#eeeeee'
     const fundoRef = ref ? corDe(ref.fundo)?.hex : undefined
     const mudar = (novo: Partial<typeof inc>) => salvar({ incorretos: { ...inc, referencia: ref?.id || '', ...novo } })
     const mover = (i: number, passo: -1 | 1) => {
@@ -646,6 +651,101 @@ export default function GerenciadorMarcas({ path }: { path: string }) {
     )
   }
 
+  // ------------------------------------------------------------ fundos
+  // Gravam a lista inteira em "fundos" (no primeiro ajuste, a lista que vinha
+  // da paleta fica salva). O slug nao muda ao renomear: e ele que liga a versao.
+  const mudarFundos = (fundos: CorFundo[]) => salvar({ fundos })
+  const mudarFundo = (slug: string, m: Partial<CorFundo>) => mudarFundos(cores.map((c) => (c.slug === slug ? { ...c, ...m } : c)))
+  const moverFundo = (i: number, passo: -1 | 1) => {
+    const j = i + passo
+    if (j < 0 || j >= cores.length) return
+    const lista = [...cores]
+    ;[lista[i], lista[j]] = [lista[j], lista[i]]
+    mudarFundos(lista)
+  }
+  const apagarFundo = (c: CorFundo) => {
+    const usam = dados.versoes.filter((v) => v.fundo === c.slug).length
+    if (usam && !window.confirm(`Apagar o fundo "${c.nome}"? ${usam} ${usam === 1 ? 'versão fica' : 'versões ficam'} sem fundo.`)) return
+    salvar({ fundos: cores.filter((x) => x.slug !== c.slug), versoes: dados.versoes.map((v) => (v.fundo === c.slug ? { ...v, fundo: '' } : v)) })
+  }
+  const semFundo = dados.versoes.filter((v) => !corDe(v.fundo))
+
+  const colunasFundos = '34px minmax(0,1.4fr) 110px minmax(0,1fr) 54px 64px 28px'
+  const quadroFundos = () => (
+    <div style={caixaSecao}>
+      <strong>Fundos ({cores.length})</strong>
+      <span style={{ fontSize: 12, color: cinza }}>
+        Cada fundo vira uma página em Versões da marca, na ordem daqui, dentro da categoria (claros, escuros, coloridos). Cada versão escolhe o fundo dela na lista de versões.
+        {dados.fundos ? null : ' Estes vieram da paleta; ao mexer, passam a ser só daqui.'}
+      </span>
+      {cores.length ? (
+        <div style={{ display: 'grid', gap: 6 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: colunasFundos, gap: 8, fontSize: 12, color: cinza }}>
+            <span />
+            <span>Nome</span>
+            <span>HEX</span>
+            <span>Categoria</span>
+            <span>Versões</span>
+            <span />
+            <span />
+          </div>
+          {cores.map((c, i) => {
+            const valido = /^#[0-9a-f]{6}$/i.test(c.hex)
+            return (
+              <div key={c.slug} style={{ display: 'grid', gridTemplateColumns: colunasFundos, gap: 8, alignItems: 'center' }}>
+                <input
+                  type="color"
+                  title="Escolher a cor"
+                  value={valido ? c.hex.toLowerCase() : '#ffffff'}
+                  onChange={(e) => mudarFundo(c.slug, { hex: e.target.value.toUpperCase() })}
+                  style={{ width: 34, height: 30, padding: 0, border: borda, borderRadius: 4, background: 'none', cursor: 'pointer' }}
+                />
+                <input style={campo} value={c.nome} placeholder="Vermelho" onChange={(e) => mudarFundo(c.slug, { nome: e.target.value })} />
+                <input
+                  style={{ ...campo, borderColor: valido ? undefined : 'var(--theme-error-500)' }}
+                  value={c.hex}
+                  placeholder="#D70008"
+                  onChange={(e) => {
+                    const t = e.target.value.trim().toUpperCase()
+                    const hex = t && !t.startsWith('#') ? `#${t}` : t
+                    // categoria acompanha a cor enquanto voce digita; depois da para trocar a mao
+                    mudarFundo(c.slug, /^#[0-9A-F]{6}$/.test(hex) ? { hex, categoria: categoriaSugerida(hex) } : { hex })
+                  }}
+                />
+                <select style={campo} value={c.categoria} onChange={(e) => mudarFundo(c.slug, { categoria: e.target.value as CorFundo['categoria'] })}>
+                  {CATEGORIAS.map((cat) => (
+                    <option key={cat.valor} value={cat.valor}>
+                      {cat.titulo}
+                    </option>
+                  ))}
+                </select>
+                <span style={{ fontSize: 12, color: cinza }}>{dados.versoes.filter((v) => v.fundo === c.slug).length}</span>
+                <span style={{ display: 'flex', gap: 2 }}>
+                  <button type="button" title="Subir" style={{ ...botao, padding: '2px 6px' }} disabled={i === 0} onClick={() => moverFundo(i, -1)}>
+                    ↑
+                  </button>
+                  <button type="button" title="Descer" style={{ ...botao, padding: '2px 6px' }} disabled={i === cores.length - 1} onClick={() => moverFundo(i, 1)}>
+                    ↓
+                  </button>
+                </span>
+                <button type="button" title="Apagar fundo" style={{ ...botao, padding: '4px 0', textAlign: 'center' }} onClick={() => apagarFundo(c)}>
+                  ×
+                </button>
+              </div>
+            )
+          })}
+        </div>
+      ) : null}
+      <button
+        type="button"
+        style={{ ...botao, justifySelf: 'start' }}
+        onClick={() => mudarFundos([...cores, { slug: `fundo-${crypto.randomUUID().slice(0, 8)}`, nome: `Fundo ${cores.length + 1}`, hex: '#FFFFFF', categoria: 'claro' }])}
+      >
+        + Novo fundo
+      </button>
+    </div>
+  )
+
   // ------------------------------------------------------------ tela
   const porCategoria = CATEGORIAS.map((c) => ({ ...c, n: dados.versoes.filter((v) => corDe(v.fundo)?.categoria === c.valor).length }))
 
@@ -656,7 +756,7 @@ export default function GerenciadorMarcas({ path }: { path: string }) {
         <ul style={{ margin: '8px 0 0', paddingLeft: 18, lineHeight: 1.7 }}>
           <li>Exportar como &gt; SVG. Estilo: Atributos de apresentação. Fonte: Converter em contornos. IDs de objeto: Nomes de camada. Minificar: desligado. Responsivo: ligado.</li>
           <li>Todas as versões na mesma escala (Ajustar prancheta aos limites da arte, sem redimensionar a arte).</li>
-          <li>Nome do arquivo: nome-do-cliente-lockup-variante-fundo-cor.svg (ex.: cereja-bloom-horizontal-sombra-fundo-preto.svg) ou lockup_variante_fundo.svg.</li>
+          <li>Nome do arquivo: nome-do-cliente-lockup-variante-fundo-cor.svg (ex.: cereja-bloom-horizontal-sombra-fundo-preto.svg). O lockup e a variante ajudam a sugerir os grupos; o fundo você escolhe aqui.</li>
           <li>Referência x: um arquivo chamado X.svg (ex.: só o &quot;c&quot; da marca), na mesma escala.</li>
           <li>Grupos com nome (simbolo, logotipo, assinatura, sombra ou qualquer nome seu) viram partes nas medidas. Furos vazados de verdade, sem forma branca por cima.</li>
         </ul>
@@ -684,6 +784,9 @@ export default function GerenciadorMarcas({ path }: { path: string }) {
         )}
       </div>
 
+      {/* fundos */}
+      {quadroFundos()}
+
       {/* versoes */}
       <div style={caixaSecao}>
         <strong>
@@ -694,12 +797,17 @@ export default function GerenciadorMarcas({ path }: { path: string }) {
         </strong>
         <Soltar multiplo rotulo="Arraste aqui todos os SVGs de uma vez (ou clique para escolher)" aoSoltar={receber} />
         {erro ? <p style={{ color: 'var(--theme-error-500)', margin: 0, fontSize: 13 }}>{erro}</p> : null}
+        {semFundo.length ? (
+          <div style={{ border: '1px solid var(--theme-warning-500, #d9a400)', background: 'var(--theme-warning-100, #fff6d6)', borderRadius: 6, padding: 12, fontSize: 13 }}>
+            <strong>{semFundo.length} {semFundo.length === 1 ? 'versão sem fundo' : 'versões sem fundo'}</strong> (não aparecem em Versões da marca): {semFundo.map((v) => v.arquivo).join(', ')}
+          </div>
+        ) : null}
 
         {recentes.length ? (
           <div style={{ border: `1px solid ${COR_COTA}`, borderRadius: 6, padding: 12, display: 'grid', gap: 10 }}>
             <strong style={{ fontSize: 13 }}>Acabaram de entrar ({recentes.length}): confira</strong>
             <span style={{ fontSize: 12, color: cinza }}>
-              Já estão no manual (falta só o Salvar lá em cima). O fundo veio do nome do arquivo: corrija o que precisar e escolha o grupo de cada uma. Arquivo com o mesmo nome substituiu o anterior.
+              Já estão no manual (falta só o Salvar lá em cima). Escolha o fundo e o grupo de cada uma. Arquivo com o mesmo nome substituiu o anterior (e manteve o fundo e o grupo dele).
             </span>
             {tabela(dados.versoes.filter((v) => recentes.includes(v.id)))}
             <button type="button" style={{ ...botaoForte, justifySelf: 'start' }} onClick={() => setRecentes([])}>

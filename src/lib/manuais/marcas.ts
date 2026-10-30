@@ -13,7 +13,7 @@ export type Versao = {
   /** lido do nome do arquivo; so serve para sugerir grupos */
   lockup: string
   variante: string
-  /** slug da cor de fundo (paleta) ou 'branco' */
+  /** slug do fundo (ver MarcasData.fundos); '' = ainda sem fundo */
   fundo: string
   /** id do grupo (null = fora do manual) */
   grupo: string | null
@@ -64,7 +64,14 @@ export type ItemIncorreto = { id: string; tipo: TipoIncorreto; rotulo: string; s
 
 export type Incorretos = { referencia: string; itens: ItemIncorreto[] }
 
-export type MarcasData = { refX?: RefX | null; versoes: Versao[]; grupos: GrupoSalvo[]; incorretos?: Incorretos | null }
+export type MarcasData = {
+  refX?: RefX | null
+  versoes: Versao[]
+  grupos: GrupoSalvo[]
+  incorretos?: Incorretos | null
+  /** fundos criados a mao no painel (nome + hex). Sem a lista (manuais antigos): branco + paleta */
+  fundos?: CorFundo[] | null
+}
 
 export const MARCAS_VAZIO: MarcasData = { refX: null, versoes: [], grupos: [], incorretos: null }
 
@@ -98,42 +105,36 @@ function luminancia(hex: string) {
   return 0.2126 * n[0] + 0.7152 * n[1] + 0.0722 * n[2]
 }
 
-const ESCURO = ['preto', 'escuro', 'black', 'dark', 'negativo']
-const CLARO = ['branco', 'claro', 'white', 'light', 'positivo']
-
-/** Palavra do nome do arquivo -> cor de fundo. Sem palavra: fundo claro. */
-export function escolherFundo(token: string, cores: CorFundo[]): string {
-  const t = slugify(token)
-  if (t) {
-    const exata = cores.find((c) => c.slug === t)
-    if (exata) return exata.slug
-    const parecida = cores.find((c) => c.slug.includes(t) || t.includes(c.slug))
-    if (parecida) return parecida.slug
-    if (ESCURO.includes(t)) {
-      const escuras = cores.filter((c) => c.categoria === 'escuro').sort((a, b) => luminancia(a.hex) - luminancia(b.hex))
-      return (escuras[0] || [...cores].sort((a, b) => luminancia(a.hex) - luminancia(b.hex))[0]).slug
-    }
-    if (CLARO.includes(t)) return BRANCO.slug
-  }
-  // marca para fundo claro: a cor clara da paleta (ex.: creme) ou branco
-  const claras = cores.filter((c) => c.categoria === 'claro' && c.slug !== BRANCO.slug)
-  return (claras[0] || BRANCO).slug
+/** Fundos do manual: os criados no painel ou, em manuais antigos, branco + paleta */
+export function fundosDoManual(marcas: Pick<MarcasData, 'fundos'> | null | undefined, paleta: Parameters<typeof coresDeFundo>[0]): CorFundo[] {
+  return marcas?.fundos ?? coresDeFundo(paleta)
 }
 
+/** Categoria pela cor: quase branco = claro, quase preto ou cinza escuro = escuro, o resto colorido */
+export function categoriaSugerida(hex: string): CorFundo['categoria'] {
+  if (!/^#[0-9a-f]{6}$/i.test(hex)) return 'claro'
+  const n = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16))
+  const saturacao = (Math.max(...n) - Math.min(...n)) / 255
+  const l = luminancia(hex)
+  if (l > 0.8) return 'claro'
+  if (l < 0.15 || (saturacao < 0.15 && l < 0.5)) return 'escuro'
+  return saturacao < 0.15 ? 'claro' : 'colorido'
+}
+
+/** Fundo branco: a pagina ja e branca, entao o desenho vai sem cor de fundo */
+export const ehBranco = (c: CorFundo | undefined) => !c || c.hex.toUpperCase() === '#FFFFFF'
+
 /**
- * Nome do arquivo -> lockup, variante e fundo. Aceita os dois jeitos:
+ * Nome do arquivo -> lockup e variante (so para sugerir grupos; o fundo e
+ * escolhido a mao). Aceita os dois jeitos:
  *   vertical_sombra_vermelho.svg (convencao do plano: lockup_variante_fundo)
  *   cereja-bloom-horizontal-sombra-fundo-preto.svg (nome do cliente na frente, "fundo-<cor>")
  */
-export function lerNomeDoArquivo(arquivo: string, cliente: string, cores: CorFundo[]): Pick<Versao, 'lockup' | 'variante' | 'fundo'> {
+export function lerNomeDoArquivo(arquivo: string, cliente: string): Pick<Versao, 'lockup' | 'variante'> {
   const base = arquivo.replace(/\.svg$/i, '').replace(/[_ ](\d+)$/, '')
   const porUnderline = base.split('_').filter(Boolean)
   if (porUnderline.length === 3 && !/fundo/i.test(base)) {
-    return {
-      lockup: slugify(porUnderline[0]) || 'marca',
-      variante: slugify(porUnderline[1]) || 'padrao',
-      fundo: escolherFundo(porUnderline[2], cores),
-    }
+    return { lockup: slugify(porUnderline[0]) || 'marca', variante: slugify(porUnderline[1]) || 'padrao' }
   }
   let tokens = slugify(base).split('-').filter(Boolean)
   // tira o nome do cliente do comeco (cereja-bloom-...)
@@ -144,8 +145,7 @@ export function lerNomeDoArquivo(arquivo: string, cliente: string, cores: CorFun
   const i = tokens.indexOf('fundo')
   const lockup = tokens[0] || 'marca'
   const resto = i > 0 ? tokens.slice(1, i) : tokens.slice(1)
-  const fundoToken = i > 0 ? tokens.slice(i + 1).join('-') : ''
-  return { lockup, variante: resto.join('-') || 'padrao', fundo: escolherFundo(fundoToken, cores) }
+  return { lockup, variante: resto.join('-') || 'padrao' }
 }
 
 /** "sombra-vermelho" -> "Sombra vermelho" */

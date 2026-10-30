@@ -286,7 +286,7 @@ export const Manuais: CollectionConfig = {
         },
         {
           label: 'Paleta',
-          description: 'As cores aparecem no bloco "Paleta" do universo visual e viram os fundos das versões da marca.',
+          description: 'As cores aparecem no bloco "Paleta" do universo visual. Os fundos das versões da marca são criados em Normas de uso.',
           fields: [
             {
               name: 'paleta',
